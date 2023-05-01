@@ -38,7 +38,7 @@ const TokenSelectorModal = ({
 
   const [{ connectedChain }] = useSetChain();
   const [displayedTokenOptions, setDisplayedTokenOptions] = useState(
-    tokenOptions[connectedChain ? connectedChain.id : mumbai.id]
+    tokenOptions[mumbai.id]
   );
 
   const [searchInput, setSearchInput] = useState("");
