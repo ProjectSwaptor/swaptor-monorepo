@@ -9,6 +9,7 @@ import { CreateSwapEncodeArgs } from "@/types";
 import { CreateSwapArgsTypes, SupportedChain } from "@/constants";
 import { FEE_IN_USD } from "@/environment";
 import { WalletState } from "@web3-onboard/core";
+import { executeAsync } from "@/api/wrappers";
 
 export const getSigner = (wallet: WalletState) => {
   return new ethers.providers.Web3Provider(wallet.provider).getSigner();
@@ -44,7 +45,7 @@ export const getSwapSignature = async (
     ethers.utils.keccak256(encodedSwapArgs)
   );
 
-  return await signer.signMessage(messageHash);
+  return await executeAsync(() => signer.signMessage(messageHash));
 };
 
 export const getFeeInWei = (price: BigNumberish) => {
