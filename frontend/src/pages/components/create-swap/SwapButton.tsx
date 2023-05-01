@@ -15,7 +15,6 @@ import {
   SWAP_ID_LENGTH,
 } from "@/constants";
 import { approve } from "@/api/token-contract";
-import LoadingSpinnerIcon from "../icons/LoadingSpinnerIcon";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -23,8 +22,10 @@ import { getBlockchainTime } from "@/api/swaptor-backend/oracles";
 
 enum SwapStatus {
   INIT,
+  APPROVAL_PENDING,
   APPROVED,
   SIGNED,
+  SIGNATURE_PENDING,
 }
 
 export type SwapArgs = {
@@ -38,6 +39,37 @@ export type SwapButtonProps = SwapArgs & {
   resetForm(): void;
 };
 
+const ACTIVE_BUTTON_STYLE =
+  "bg-teal-400 hover:bg-teal-500 transition text-black font-semibold rounded-lg py-2 mt-2";
+const INACTIVE_BUTTON_STYLE =
+  "bg-gray-700 transition text-gray-400 font-semibold rounded-lg py-2 mt-2 animate-pulse";
+
+const displaySuccessMessage = () =>
+  toast.success("Success!", { autoClose: 3000, position: "top-center" });
+
+const displayFailureMessage = (failureMessage?: string) =>
+  toast.error(failureMessage || "Something went wrong.", {
+    autoClose: 3000,
+    position: "top-center",
+  });
+
+const getExpirationTime = async (chainId: SupportedChain) => {
+  const { err, res } = await getBlockchainTime(chainId);
+
+  if (err) {
+    return;
+  }
+
+  return +res!.data.chainTime + ONE_DAY_IN_SECONDS;
+};
+
+const parseTokenData = (tokenType: TokenType, tokenData: string) => {
+  if (tokenType === TokenType.ERC20) {
+    return ethers.utils.parseEther(tokenData).toString();
+  }
+  return tokenData;
+};
+
 const SwapButton = ({
   buyer,
   swapType,
@@ -49,7 +81,6 @@ const SwapButton = ({
 
   const router = useRouter();
 
-  const [waitingForTx, setWaitingForTx] = useState(false);
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
   const [{ wallet }] = useConnectWallet();
 
@@ -62,33 +93,8 @@ const SwapButton = ({
     ? SWAP_TYPE_TO_TOKENS[swapType]
     : { offeredTokenType: TokenType.ERC20, wantedTokenType: TokenType.ERC20 };
 
-  const getExpirationTime = async (chainId: SupportedChain) => {
-    const { err, res } = await getBlockchainTime(chainId);
-
-    if (err) {
-      return;
-    }
-
-    return +res!.data.chainTime + ONE_DAY_IN_SECONDS;
-  };
-
-  const parseTokenData = (tokenType: TokenType, tokenData: string) => {
-    if (tokenType === TokenType.ERC20) {
-      return ethers.utils.parseEther(tokenData).toString();
-    }
-    return tokenData;
-  };
-
-  const displaySuccessMessage = () =>
-    toast.success("Success!", { autoClose: 3000, position: "top-center" });
-  const displayFailureMessage = () =>
-    toast.error("Something went wrong.", {
-      autoClose: 3000,
-      position: "top-center",
-    });
-
   const handleApprove = async () => {
-    setWaitingForTx(true);
+    setSwapStatus(SwapStatus.APPROVAL_PENDING);
 
     const { err } = await approve(
       wallet!,
@@ -97,21 +103,24 @@ const SwapButton = ({
       parseTokenData(offeredTokenType, offeredTokenData)
     );
 
-    setWaitingForTx(false);
-
     if (!err) {
       setSwapStatus(SwapStatus.APPROVED);
-
       displaySuccessMessage();
     } else {
-      displayFailureMessage();
+      setSwapStatus(SwapStatus.INIT);
+
+      const errorMessage = err.message.includes("user rejected transaction")
+        ? "Approval rejected."
+        : "Approval failed, please try again.";
+
+      displayFailureMessage(errorMessage);
     }
   };
 
   const handleSign = async () => {
     id = nanoid(SWAP_ID_LENGTH);
 
-    setWaitingForTx(true);
+    setSwapStatus(SwapStatus.SIGNATURE_PENDING);
 
     const expirationTime = (await getExpirationTime(
       wallet!.chains[0].id as SupportedChain
@@ -145,9 +154,22 @@ const SwapButton = ({
       expirationTime,
     });
 
-    const signature = await getSwapSignature(signer, encodedArgs);
+    let { res, err } = await getSwapSignature(signer, encodedArgs);
 
-    const { err } = await createSwap({
+    if (err) {
+      const errorMessage = err.message.includes("user rejected signing")
+        ? "Signing rejected."
+        : "Signing failed, please try again.";
+
+      displayFailureMessage(errorMessage);
+      setSwapStatus(SwapStatus.APPROVED);
+
+      return;
+    }
+
+    const signature = res!;
+
+    ({ err } = await createSwap({
       id,
       signature,
       swapType,
@@ -159,41 +181,74 @@ const SwapButton = ({
       wantedTokenData: wantedTokenDataParsed,
       chainId,
       expirationTime,
-    });
-
-    setWaitingForTx(false);
+    }));
 
     if (!err) {
       setSwapStatus(SwapStatus.SIGNED);
+
+      await router.push(`/swap-overview/${id}`);
+      resetForm();
     } else {
-      displayFailureMessage();
+      setSwapStatus(SwapStatus.APPROVED);
+      displayFailureMessage("Swap creation failed, please try again.");
     }
   };
 
-  const handleSwapCreation = async () => {
+  const handleSwapButtonClick = async () => {
     switch (swapStatus) {
       case SwapStatus.INIT:
         return await handleApprove();
       case SwapStatus.APPROVED:
-        await handleSign();
-        await router.push(`/swap-overview/${id}`);
+        return await handleSign();
       case SwapStatus.SIGNED:
-        resetForm();
-        // Do an action that will reset the swap state
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.SIGNATURE_PENDING:
         return;
     }
 
     const _ensureAllCasesCovered: never = swapStatus;
   };
 
-  const handleSwapButtonText = () => {
+  const getSwapButtonText = () => {
     switch (swapStatus) {
       case SwapStatus.INIT:
         return "Approve";
+      case SwapStatus.APPROVAL_PENDING:
+        return "Approval Pending...";
       case SwapStatus.APPROVED:
-        return "Sign";
+        return "Create Swap";
+      case SwapStatus.SIGNATURE_PENDING:
+        return "Signature Pending...";
       case SwapStatus.SIGNED:
         return "Done";
+    }
+
+    const _ensureAllCasesCovered: never = swapStatus;
+  };
+
+  const getSwapButtonStyle = () => {
+    switch (swapStatus) {
+      case SwapStatus.INIT:
+      case SwapStatus.APPROVED:
+        return ACTIVE_BUTTON_STYLE;
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.SIGNATURE_PENDING:
+      case SwapStatus.SIGNED:
+        return INACTIVE_BUTTON_STYLE;
+    }
+
+    const _ensureAllCasesCovered: never = swapStatus;
+  };
+
+  const getSwapButtonDisabled = () => {
+    switch (swapStatus) {
+      case SwapStatus.INIT:
+      case SwapStatus.APPROVED:
+        return false;
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.SIGNATURE_PENDING:
+      case SwapStatus.SIGNED:
+        return true;
     }
 
     const _ensureAllCasesCovered: never = swapStatus;
@@ -202,18 +257,11 @@ const SwapButton = ({
   return (
     <div>
       <button
-        className="w-full bg-teal-400 hover:bg-teal-500 transition text-black font-semibold rounded-lg py-2 mt-2 text-lg"
-        onClick={handleSwapCreation}
+        className={`${getSwapButtonStyle()} flex justify-center w-full text-lg`}
+        onClick={handleSwapButtonClick}
+        disabled={getSwapButtonDisabled()}
       >
-        {waitingForTx ? (
-          <div className="w-full h-full flex justify-center">
-            <div className="w-8 h-8 text-gray-600 fill-gray-400">
-              <LoadingSpinnerIcon />
-            </div>
-          </div>
-        ) : (
-          handleSwapButtonText()
-        )}
+        {getSwapButtonText()}
       </button>
       <ToastContainer />
     </div>
