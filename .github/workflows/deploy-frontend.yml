@@ -10,7 +10,7 @@ on:
       - "frontend/**"
 
 jobs:
-  Deploy-Production:
+  deploy-staging:
     defaults:
       run:
         working-directory: ./frontend
