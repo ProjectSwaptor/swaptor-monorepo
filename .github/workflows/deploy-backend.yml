@@ -7,7 +7,7 @@ on:
       - "backend/**"
 
 jobs:
-  deploy-staging:
+  deploy-backend-staging:
     name: deploy
     defaults:
       run:
