@@ -10,10 +10,7 @@ on:
       - "frontend/**"
 
 jobs:
-  Deploy-Production:
-    defaults:
-      run:
-        working-directory: ./frontend
+  deploy-staging:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
