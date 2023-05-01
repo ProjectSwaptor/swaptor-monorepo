@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
       - "*"
+    paths:
+      - "smart-contracts/**"
+
 jobs:
   sc-test:
     name: sc-test
