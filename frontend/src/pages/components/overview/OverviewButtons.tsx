@@ -21,6 +21,7 @@ import {
 } from "@/api/swaptor-backend/swaps";
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
+import SwitchChain from "../SwitchChain";
 
 enum SwapStatus {
   INIT,
@@ -34,7 +35,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const [waitingForTx, setWaitingForTx] = useState(false);
   const [active, setActive] = useRecoilState(swapActive);
 
-  const [{ connectedChain }] = useSetChain();
+  const [{ chains, connectedChain }] = useSetChain();
   const [{ wallet }, connect] = useConnectWallet();
 
   const router = useRouter();
@@ -181,54 +182,88 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         setVisible={setShareModalVisible}
         swapLink={`${FRONTEND_URL}/swap-overview/${swapId}`}
       />
-      {!active ? (
-        <button
-          className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleShareClick}
-        >
-          Share
-        </button>
-      ) : !wallet ? (
-        <div className="flex flex-col items-center gap-4 lg:gap-5">
+      {(() => {
+        if (!active) {
+          return (
+            <button
+              className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
+              onClick={handleShareClick}
+            >
+              Share
+            </button>
+          );
+        }
+
+        if (!wallet) {
+          return (
+            <div className="flex flex-col items-center gap-4 lg:gap-5">
+              <button
+                className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
+                onClick={handleShareClick}
+              >
+                Share
+              </button>
+              <button
+                className="btn-quaternary h-10 w-[21.5rem] md:mt-0 md:w-[44rem] lg:w-[51rem]"
+                onClick={() => connect()}
+              >
+                Connect Wallet
+              </button>
+            </div>
+          );
+        }
+
+        if (connectedAddress === seller.toLowerCase()) {
+          return (
+            <button
+              className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
+              onClick={handleShareClick}
+            >
+              Share
+            </button>
+          );
+        }
+
+        if (
+          buyer !== ethers.constants.AddressZero &&
+          connectedAddress !== buyer.toLowerCase()
+        ) {
+          return (
+            <button className="btn-inactive cursor-default w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]">
+              Not Allowed to Accept
+            </button>
+          );
+        }
+
+        if (connectedChain && connectedChain.id !== chains[0].id) {
+          return (
+            <SwitchChain
+              text="Switch Chain"
+              chainId={chains[0].id}
+              chainNamespace={chains[0].namespace}
+            />
+          );
+        }
+
+        if (waitingForTx) {
+          return (
+            <div className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center">
+              <div className="w-8 h-8 text-gray-600 fill-gray-400">
+                <LoadingSpinnerIcon />
+              </div>
+            </div>
+          );
+        }
+
+        return (
           <button
-            className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-            onClick={handleShareClick}
+            className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
+            onClick={handleAcceptSwap}
           >
-            Share
+            {handleSwapButtonText()}
           </button>
-          <button
-            className="btn-quaternary h-10 w-[21.5rem] md:mt-0 md:w-[44rem] lg:w-[51rem]"
-            onClick={() => connect()}
-          >
-            Connect Wallet
-          </button>
-        </div>
-      ) : connectedAddress === seller.toLowerCase() ? (
-        <button
-          className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleShareClick}
-        >
-          Share
-        </button>
-      ) : buyer !== ethers.constants.AddressZero &&
-        connectedAddress !== buyer.toLowerCase() ? (
-        <button className="btn-inactive cursor-default w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]">
-          Not Allowed to Accept
-        </button>
-      ) : waitingForTx ? (
-        <div className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center">
-          <div className="w-8 h-8 text-gray-600 fill-gray-400">
-            <LoadingSpinnerIcon />
-          </div>
-        </div>
-      ) : (
-        <button
-          className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleAcceptSwap}
-        >
-          {handleSwapButtonText()}
-        </button>
-      )}
+        );
+      })()}
       <ToastContainer />
     </div>
   );
