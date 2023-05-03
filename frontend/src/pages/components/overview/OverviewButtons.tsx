@@ -17,6 +17,7 @@ import { parseTokenData } from "@/utils/token";
 import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import {
   getBlockchainTime,
+  getFeeInUsd,
   updateSwapState,
 } from "@/api/swaptor-backend/swaps";
 import { useRecoilState } from "recoil";
@@ -124,9 +125,16 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     }
     const blockchainTime = blockchainTimeResponse!.data.time;
 
+    const { err: feeInUsdError, res: feeInUsdResponse } = await getFeeInUsd();
+
+    if (feeInUsdError) {
+      displayFailureMessage(feeInUsdError.message);
+      return;
+    }
+
     const feeInWei =
       +freeTrialEndTime < +blockchainTime
-        ? getFeeInWei(res!.data.price)
+        ? getFeeInWei(res!.data.price, feeInUsdResponse!.data.feeInUsd)
         : BigNumber.from(0);
 
     const { res: swapReceipt, err: swapErr } = await acceptSwap(
