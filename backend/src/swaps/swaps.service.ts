@@ -64,8 +64,8 @@ export const updateSwapState = async (swap: Swap, transactionHash: string) => {
   return await SwapModel.updateOne({ id }, { active: false });
 };
 
-export const getFeeInUsd = async (chain: SwaptorChains) => {
-  const getLatestValue = () => getLatestFee(chain);
+export const getFeeInUsd = async () => {
+  const getLatestValue = () => getLatestFee();
   const fee = await cacheService.retrieveFromCache(
     CacheKey.Fee,
     getLatestValue
