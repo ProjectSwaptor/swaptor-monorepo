@@ -47,3 +47,11 @@ export const updateSwapState = async (id: string, transactionHash: string) => {
       )
   );
 };
+
+type FeeInUsd = { feeInUsd: string };
+
+export const getFeeInUsd = async () => {
+  return await executeAsync(
+    async () => await axios.get<FeeInUsd>(`${BACKEND_URL}/swaps/fee`)
+  );
+};
