@@ -5,7 +5,6 @@ import * as SwaptorJSON from "../abis/Swaptor.json";
 import { AggregatorV3Interface } from "./types/contracts/src/v0.8/interfaces";
 import { Swaptor } from "./types/contracts/src/v0.8/";
 import { CHAIN_TO_PRICE_FEED } from "./oracles.constants";
-import { SwaptorChains } from "../common/common.types";
 import {
   CHAIN_TO_RPC,
   Chain,
@@ -40,9 +39,9 @@ export class ChainlinkPriceFeed {
   }
 }
 
-export const getLatestFee = async (chain: SwaptorChains) => {
-  const swaptorAddress = SWAPTOR_ADDRESSES[chain];
-  const rpc = CHAIN_TO_RPC[chain];
+export const getLatestFee = async () => {
+  const swaptorAddress = SWAPTOR_ADDRESSES[Chain.Mumbai];
+  const rpc = CHAIN_TO_RPC[Chain.Mumbai];
 
   const rpcProvider = new ethers.providers.JsonRpcProvider(rpc);
 
@@ -51,6 +50,6 @@ export const getLatestFee = async (chain: SwaptorChains) => {
     SwaptorJSON.abi,
     rpcProvider
   ) as Swaptor;
-
+  
   return (await swaptor.feeInUsd()).toString();
 };
