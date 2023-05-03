@@ -6,8 +6,7 @@ import {
   ERC721_ABI,
 } from "@/constants/blockchain/abis";
 import { CreateSwapEncodeArgs } from "@/types";
-import { CreateSwapArgsTypes, SupportedChain } from "@/constants";
-import { FEE_IN_USD } from "@/environment";
+import { CreateSwapArgsTypes } from "@/constants";
 import { WalletState } from "@web3-onboard/core";
 import { executeAsync } from "@/api/wrappers";
 
@@ -48,8 +47,8 @@ export const getSwapSignature = async (
   return await executeAsync(() => signer.signMessage(messageHash));
 };
 
-export const getFeeInWei = (price: BigNumberish) => {
-  const feeInFiatBn = BigNumber.from(FEE_IN_USD);
+export const getFeeInWei = (price: BigNumberish, feeInUsd: BigNumberish) => {
+  const feeInFiatBn = BigNumber.from(feeInUsd);
   const priceInFiatBn = BigNumber.from(price);
 
   return feeInFiatBn.mul(ethers.utils.parseEther("1")).div(priceInFiatBn);
