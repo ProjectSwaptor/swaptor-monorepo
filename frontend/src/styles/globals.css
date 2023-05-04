@@ -23,7 +23,7 @@
     @apply bg-teal-500 bg-opacity-25 rounded-lg text-teal-400 transition hover:text-teal-500 hover:border-teal-500;
   }
   .btn-inactive {
-    @apply bg-gray-700 text-gray-900 opacity-60 rounded-lg py-1 px-3 md:px-4 md:py-1.5;
+    @apply bg-gray-700 text-gray-900 border border-gray-700 opacity-60 rounded-lg;
   }
 }
 
@@ -182,22 +182,4 @@ a {
   );
   filter: blur(100px);
   transform: rotate(58.56deg);
-}
-
-.tooltip {
-  visibility: none;
-  position: absolute;
-  z-index: 100;
-  left: 43%;
-  bottom: 110%;
-  background-color: #1f2937;
-  color: white;
-  border-radius: 0.5rem;
-  padding: 0.3rem;
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
-.btn-share:hover .tooltip {
-  opacity: 1;
 }
