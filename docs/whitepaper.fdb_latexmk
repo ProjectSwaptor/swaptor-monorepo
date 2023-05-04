@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1683194500 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683194500 0
-  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683194499 2573 39ff7b29cd12231ff4ed9aa88d3644e8 ""
+["pdflatex"] 1683195816 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683195816 0
+  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683195816 2953 db8696a640cf8ddd973cf1d125bae199 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -26,14 +26,15 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls" 1667332637 20144 d5ecf0a5140c8d8d8b72cbe86e320eff ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/size12.clo" 1667332637 8449 c314623021fbddd0180c05345324933c ""
+  "/usr/local/texlive/2023/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty" 1668028059 18450 88279bf67c81e69f8e3f1c1bad1a26c5 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1673989714 30429 213676d4c7327a21d91ddaed900e7b81 ""
   "/usr/local/texlive/2023/texmf-dist/web2c/texmf.cnf" 1677365944 40745 87bb86a62d462f93a1efc6b0c65c872e ""
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1683188700 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1683188621 7883464 00e5102e3c431862e33559a86b5d17a4 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "whitepaper.aux" 1683194500 629 fb12bc0f6f8a1d00431f1421a13b8a4d "pdflatex"
-  "whitepaper.tex" 1683194499 2573 39ff7b29cd12231ff4ed9aa88d3644e8 ""
-  "whitepaper.toc" 1683194500 328 49d71b8b2ee563a596aa2cf2da6f6fb4 "pdflatex"
+  "whitepaper.aux" 1683195816 724 12ccc844226658edee05aa3ac0c73073 "pdflatex"
+  "whitepaper.tex" 1683195816 2953 db8696a640cf8ddd973cf1d125bae199 ""
+  "whitepaper.toc" 1683195816 382 4a9bd58e4703bb2a422916ba0ae5e26d "pdflatex"
   (generated)
   "whitepaper.aux"
   "whitepaper.log"

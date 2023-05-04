@@ -1,4 +1,6 @@
 \documentclass[12pt]{article}
+\usepackage{fancyhdr}
+
 \setlength{\oddsidemargin}{27mm}
 \setlength{\evensidemargin}{27mm}
 \setlength{\hoffset}{-1in}
@@ -20,8 +22,12 @@
 \begin{document}
 \baselineskip 12pt
 
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Current version: 1.0}
+
 \begin{center}
-  \textbf{\Large Swaptor - Decentralized P2P Exchange Dapp} \\
+  \textbf{\Large Swaptor Whitepaper} \\
 
   \vspace{1.5cc}
   { \sc Marko Ivanković$^{1}$}\\
@@ -54,6 +60,10 @@
 \end{itemize}
 
 \subsection{On-chain Architecture}
+\indent Smart contract architecture is minimal, there is only a single contract called Swaptor.
+Its main purpose is to verify digital signatures and execute the swaps on successful verification. 
+What is important to add is that Swaptor contract never holds assets that are meant to be swapped.
+
 
 \subsection{Off-chain Architecture}
 
@@ -61,6 +71,9 @@
 \dots
 
 \section{Tokenomics}
+\dots
+
+\section{Roadmap}
 \dots
 
 \begin{thebibliography}{9}
