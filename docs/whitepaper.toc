@@ -1,3 +1,5 @@
 \contentsline {section}{\numberline {1}Architectural Overview}{3}{}%
+\contentsline {subsection}{\numberline {1.1}On-chain Architecture}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Off-chain Architecture}{3}{}%
 \contentsline {section}{\numberline {2}Security}{3}{}%
 \contentsline {section}{\numberline {3}Tokenomics}{3}{}%
