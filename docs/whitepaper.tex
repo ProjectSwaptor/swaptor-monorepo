@@ -2,6 +2,22 @@
 \usepackage{indentfirst}
 \usepackage{url}
 \usepackage{pgf-pie}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{tikz}
+
+\newlength{\itemimagewidth}
+\setlength{\itemimagewidth}{1.5cm}
+
+\newlist{roadmap}{enumerate}{1}
+\setlist[roadmap]{label={},leftmargin=*}
+
+\newcommand{\roadmapitem}[3]{
+  \item \begin{tikzpicture}[baseline={(0,-0.5)}]
+    \node[anchor=west,inner sep=0pt,outer sep=0pt,minimum height=2em,minimum width=\itemimagewidth] (image) at (0,0) {\includegraphics[width=\itemimagewidth]{#1}};
+    \node[anchor=west,inner xsep=5pt] at (image.east) {\parbox[t]{\dimexpr\linewidth-\itemimagewidth-5pt}{\textbf{#2}\par #3}};
+  \end{tikzpicture}
+}
 
 \setlength{\oddsidemargin}{27mm}
 \setlength{\evensidemargin}{27mm}
@@ -147,11 +163,24 @@ by the Swaptor contract.
 Token vesting will occur at the end of every three-month period.
 This vesting will apply to tokens acquired by venture capitalists,
 public sales, and the team. This measure has been introduced to
-increase the trust of the community by regulating token dumping and 
+increase the trust of the community by regulating token dumping and
 aligning the interests of the team with the project itself.
 
 \section{Roadmap}
-\dots
+
+\begin{roadmap}
+  \roadmapitem{ethereum.png}{Q3 2023}{
+    Description of item 1 goes here.
+  }
+
+  \roadmapitem{ethereum.png}{Q4 2023}{
+    Description of item 2 goes here.
+  }
+
+  \roadmapitem{ethereum.png}{Q1 2024}{
+    Description of item 3 goes here.
+  }
+\end{roadmap}
 
 \begin{thebibliography}{9}
   \bibitem{chainlink} What is an oracle in blockchain? explained | chainlink, \url{https://chain.link/education/blockchain-oracles}

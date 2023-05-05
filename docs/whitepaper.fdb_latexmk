@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1683286757 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683286758 0
-  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683286757 7051 fa55751a84059e5fe84a03e252f5f0ed ""
+["pdflatex"] 1683290750 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683290752 0
+  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683290749 7911 e569af7a01e6cb850606bfa4061d09d1 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -88,6 +88,7 @@
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls" 1667332637 20144 d5ecf0a5140c8d8d8b72cbe86e320eff ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/size12.clo" 1667332637 8449 c314623021fbddd0180c05345324933c ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/carlisle/scalefnt.sty" 1137109962 1360 df2086bf924b14b72d6121fe9502fcdb ""
+  "/usr/local/texlive/2023/texmf-dist/tex/latex/enumitem/enumitem.sty" 1561238569 51697 f8f08183cd2080d9d18a41432d651dfb ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/graphics-cfg/color.cfg" 1459978653 1213 620bba36b25224fa9b7e1ccb4ecb76fd ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/graphics-cfg/graphics.cfg" 1465944070 1224 978390e9c2234eab29404bc21b268d1e ""
@@ -118,9 +119,10 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1683188700 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1683188621 7883464 00e5102e3c431862e33559a86b5d17a4 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "whitepaper.aux" 1683286758 1876 be77f2653bdf94a562b1a362994f1e32 "pdflatex"
-  "whitepaper.tex" 1683286757 7051 fa55751a84059e5fe84a03e252f5f0ed ""
-  "whitepaper.toc" 1683286758 981 76c7ed47484a3e603255df5ef213d451 "pdflatex"
+  "ethereum.png" 1683290726 160579 86b356aa4636232f3e200c65d2a8b6b4 ""
+  "whitepaper.aux" 1683290751 1876 be77f2653bdf94a562b1a362994f1e32 "pdflatex"
+  "whitepaper.tex" 1683290749 7911 e569af7a01e6cb850606bfa4061d09d1 ""
+  "whitepaper.toc" 1683290751 981 76c7ed47484a3e603255df5ef213d451 "pdflatex"
   (generated)
   "whitepaper.aux"
   "whitepaper.log"
