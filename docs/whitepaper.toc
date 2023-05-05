@@ -4,5 +4,9 @@
 \contentsline {subsubsection}{\numberline {1.1.2}Swap types}{3}{}%
 \contentsline {subsubsection}{\numberline {1.1.3}Fees}{3}{}%
 \contentsline {subsection}{\numberline {1.2}Off-chain Architecture}{3}{}%
+\contentsline {subsubsection}{\numberline {1.2.1}Backend}{3}{}%
+\contentsline {subsubsection}{\numberline {1.2.2}Frontend}{3}{}%
+\contentsline {subsubsection}{\numberline {1.2.3}Database \& Security}{3}{}%
 \contentsline {section}{\numberline {2}Tokenomics}{3}{}%
+\contentsline {subsection}{\numberline {2.1}Token Allocation}{3}{}%
 \contentsline {section}{\numberline {3}Roadmap}{3}{}%

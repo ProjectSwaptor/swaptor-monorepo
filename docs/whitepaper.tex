@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
-\usepackage{fancyhdr}
 \usepackage{indentfirst}
 \usepackage{url}
+\usepackage{pgf-pie}
 
 \setlength{\oddsidemargin}{27mm}
 \setlength{\evensidemargin}{27mm}
@@ -15,18 +15,14 @@
 \setlength{\textheight}{235mm}
 \setlength{\textwidth}{155mm}
 
-%\pagestyle{empty}
 \pagestyle{plain}
 
 \renewcommand{\thefootnote}{\fnsymbol{footnote}}
 \renewcommand{\labelitemi}{$\bullet$}
 
 \begin{document}
-\baselineskip 12pt
+\baselineskip 11pt
 
-\pagestyle{fancy}
-\fancyhf{}
-\rhead{Current version: 1.0}
 
 \begin{center}
   \textbf{\Large Swaptor Whitepaper} \\
@@ -85,8 +81,24 @@ To accept the swap, an address will need to pay a fixed fee of \$$5$ in the nati
 
 \subsection{Off-chain Architecture}
 
+\subsubsection{Backend}
+
+\subsubsection{Frontend}
+
+\subsubsection{Database \& Security}
+
 \section{Tokenomics}
-\dots
+
+\subsection{Token Allocation}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \pie{34/Public sale, 22/VC, 16/Team, 18/Community, 10/Liquidity pool}
+  \end{tikzpicture}
+  \caption{Pie chart showing the distribution of tokens}
+  \label{fig:pie-chart}
+\end{figure}
 
 \section{Roadmap}
 \dots
