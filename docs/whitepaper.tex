@@ -79,17 +79,40 @@ In the future, Swaptor intends to extend its support to include native currency 
 \subsubsection{Fees}
 To accept the swap, an address will need to pay a fixed fee of \$$5$ in the native currency, which is calculated using Chainlink oracles\cite{chainlink}. It should be noted that the fee is not fixed and may be subject to change.
 
-\subsection{Off-chain Architecture}
+  \subsection{Off-chain Architecture}
 
-\subsubsection{Backend}
+  \subsubsection{Backend}
 
-\subsubsection{Frontend}
+  \subsubsection{Frontend}
 
-\subsubsection{Database \& Security}
+  \subsubsection{Database \& Security}
 
-\section{Tokenomics}
+  \section{Tokenomics}
 
-\subsection{Token Allocation}
+  \subsection{Token Mechanics}
+
+  The price of Swaptor Token (SWPTR) is influenced by several factors,
+  including activity on the Swaptor Protocol, the price of Ether,
+  and liquidity pool activity. As mentioned earlier, every time a
+  successful swap occurs, a fixed fee in the native currency is
+  exchanged for SWPTR token in the Ether/SWPTR liquidity pool.
+  The amount of SWPTR token is then burned, leading to an increase
+  in the price of SWPTR token.
+
+  Given that Ether is on the other side of the pool, the price of
+  SWPTR is directly affected by the price of Ether. The decision to
+  use Ether as the currency for the exchange fee is based on the fact
+  that users already pay gas fees in Ether, and adding an additional
+  swap would result in gas wastage. Moreover, Ether is the backbone of
+  many other coins, and a decrease in its price would effectively
+  eliminate a significant portion of the Ethereum DeFi ecosystem.
+
+
+
+
+  \subsection{Token Allocation}
+
+  Total of $1,000,000$ SWPTR tokens will be minted and distributed over time as described by Figure \ref{fig:pie-chart}.
 
 \begin{figure}[h]
   \centering
@@ -99,6 +122,33 @@ To accept the swap, an address will need to pay a fixed fee of \$$5$ in the nati
   \caption{Pie chart showing the distribution of tokens}
   \label{fig:pie-chart}
 \end{figure}
+
+The tokens allocated to the community, as illustrated in Figure \ref{fig:pie-chart}, will be distributed from the Swaptor contract.
+Upon swap execution, both the buyer and seller will be granted a single SWPTR token.
+Buyer and seller are motivated to hold the token as its price will grow proportional to Swaptor activity.
+
+\subsection{Utility}
+At present, the SWPTR token serves only to reflect the strength of the
+project and the level of traction it has gained. Rational investors
+who believe in the project's bright future may choose to hold the
+token, as its price increases every time a swap is executed.
+
+During the community token distribution phase, it is expected that
+the price increase will be slightly lower, as two SWPTR tokens will
+be released from the Swaptor contract, giving actors the option to swap
+them for Ether. However, this scenario is highly unlikely, as the
+amount earned during this phase will be negligible, partly due to
+the gas fees required for swapping. Any impact on the price of SWPTR during
+community distribution phase due to actors who decide to swap tokens
+for Ether is partially dampened by the swap and burn mechanism executed
+by the Swaptor contract.
+
+\subsection{Vesting}
+Token vesting will occur at the end of every three-month period.
+This vesting will apply to tokens acquired by venture capitalists,
+public sales, and the team. This measure has been introduced to
+increase the trust of the community by regulating token dumping and 
+aligning the interests of the team with the project itself.
 
 \section{Roadmap}
 \dots

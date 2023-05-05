@@ -8,5 +8,8 @@
 \contentsline {subsubsection}{\numberline {1.2.2}Frontend}{3}{}%
 \contentsline {subsubsection}{\numberline {1.2.3}Database \& Security}{3}{}%
 \contentsline {section}{\numberline {2}Tokenomics}{3}{}%
-\contentsline {subsection}{\numberline {2.1}Token Allocation}{3}{}%
-\contentsline {section}{\numberline {3}Roadmap}{3}{}%
+\contentsline {subsection}{\numberline {2.1}Token Mechanics}{3}{}%
+\contentsline {subsection}{\numberline {2.2}Token Allocation}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Utility}{4}{}%
+\contentsline {subsection}{\numberline {2.4}Vesting}{4}{}%
+\contentsline {section}{\numberline {3}Roadmap}{5}{}%
