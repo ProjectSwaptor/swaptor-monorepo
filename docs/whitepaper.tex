@@ -98,8 +98,18 @@ To accept the swap, an address will need to pay a fixed fee of \$$5$ in the nati
   \subsection{Off-chain Architecture}
 
   \subsubsection{Backend}
+  The purpose of the backend is to reduce the number of operations on the blockchain,
+  which would result in higher gas fees paid by users. It also caches some information
+  retrieved from the blockchain to improve the user experience, such as reducing wait
+  times. Upon client request, it retrieves details about swaps, including the original
+  swap terms and signature.
 
   \subsubsection{Frontend}
+  The Swaptor frontend application is a user interface that allows users to interact
+  with the Swaptor protocol on the supported networks. It enables users to easily swap
+  supported token types without the need for a centralized exchange. Each user is capable 
+  of creating, deleting, sharing and accepting a swap. The application is accessible through a 
+  web browser or mobile device and is designed to be user-friendly and intuitive.
 
   \subsubsection{Database \& Security}
 
