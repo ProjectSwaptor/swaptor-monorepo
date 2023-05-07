@@ -3,6 +3,8 @@ import { LAMBDA } from "../environment";
 import { CacheKey } from "./cache.constants";
 import { HandlerReturnValue } from "./cache.types";
 import { CacheModel } from "./cache.models";
+import { HttpError } from "../errors/errors.classes";
+import { StatusCodes } from "http-status-codes";
 
 export const CacheToExpTimeInSeconds: Record<CacheKey, number> = {
   [CacheKey.Price]: 180,
@@ -12,11 +14,18 @@ export const CacheToExpTimeInSeconds: Record<CacheKey, number> = {
 
 export const retrieveFromRedis = async <G extends HandlerReturnValue>(
   key: CacheKey,
-  getLatestValue: () => Promise<G>
+  getLatestValue?: () => Promise<G>
 ) => {
   const cachedValue = await redisClient.get(key);
 
   if (!cachedValue) {
+    if (!getLatestValue) {
+      throw new HttpError(
+        "Cache value not set",
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+
     const expirationTime = CacheToExpTimeInSeconds[key];
     const latestValue = (await getLatestValue()).toString();
 
@@ -32,7 +41,7 @@ export const retrieveFromRedis = async <G extends HandlerReturnValue>(
 
 export const retrieveFromDb = async <G extends HandlerReturnValue>(
   key: CacheKey,
-  getLatestValue: () => Promise<G>
+  getLatestValue?: () => Promise<G>
 ) => {
   const document = await CacheModel.findOne({ key }).select([
     "-__v",
@@ -41,6 +50,13 @@ export const retrieveFromDb = async <G extends HandlerReturnValue>(
   ]);
 
   if (!document) {
+    if (!getLatestValue) {
+      throw new HttpError(
+        "Cache value not set",
+        StatusCodes.INTERNAL_SERVER_ERROR
+      );
+    }
+
     const latestValue = (await getLatestValue()).toString();
 
     await CacheModel.create({
@@ -57,7 +73,7 @@ export const retrieveFromDb = async <G extends HandlerReturnValue>(
 
 export const retrieveFromCache = async <G extends HandlerReturnValue>(
   key: CacheKey,
-  getLatestValue: () => Promise<G>
+  getLatestValue?: () => Promise<G>
 ) => {
   if (LAMBDA) {
     return await retrieveFromDb(key, getLatestValue);

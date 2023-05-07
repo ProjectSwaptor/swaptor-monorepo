@@ -10,7 +10,6 @@ import { HttpError } from "../errors/errors.classes";
 import { MAX_RESOURCE_LIMIT } from "../environment";
 import { SwaptorChains } from "../common/common.types";
 import { CacheKey } from "../cache/cache.constants";
-import { getLatestFee } from "../oracles/oracles.contracts";
 import { SwaptorEvent } from "./swaps.constants";
 
 export const createSwap = async (createSwapDto: CreateSwapDto) => {
@@ -65,11 +64,7 @@ export const updateSwapState = async (swap: Swap, transactionHash: string) => {
 };
 
 export const getFeeInUsd = async () => {
-  const getLatestValue = () => getLatestFee();
-  const fee = await cacheService.retrieveFromCache(
-    CacheKey.Fee,
-    getLatestValue
-  );
+  const fee = await cacheService.retrieveFromCache(CacheKey.Fee);
 
   return fee;
 };
