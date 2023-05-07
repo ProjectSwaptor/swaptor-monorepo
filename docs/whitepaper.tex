@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{enumitem}
 \usepackage{tikz}
+\usepackage{amsmath}
 
 \newlength{\itemimagewidth}
 \setlength{\itemimagewidth}{1.5cm}
@@ -107,11 +108,9 @@ To accept the swap, an address will need to pay a fixed fee of \$$5$ in the nati
   \subsubsection{Frontend}
   The Swaptor frontend application is a user interface that allows users to interact
   with the Swaptor protocol on the supported networks. It enables users to easily swap
-  supported token types without the need for a centralized exchange. Each user is capable 
-  of creating, deleting, sharing and accepting a swap. The application is accessible through a 
+  supported token types without the need for a centralized exchange. Each user is capable
+  of creating, deleting, sharing and accepting a swap. The application is accessible through a
   web browser or mobile device and is designed to be user-friendly and intuitive.
-
-  \subsubsection{Database \& Security}
 
   \section{Tokenomics}
 
@@ -140,41 +139,77 @@ To accept the swap, an address will need to pay a fixed fee of \$$5$ in the nati
 
   Total of $1,000,000$ SWPTR tokens will be minted and distributed over time as described by Figure \ref{fig:pie-chart}.
 
-\begin{figure}[h]
-  \centering
-  \begin{tikzpicture}
-    \pie{34/Public sale, 22/VC, 16/Team, 18/Community, 10/Liquidity pool}
-  \end{tikzpicture}
-  \caption{Pie chart showing the distribution of tokens}
-  \label{fig:pie-chart}
-\end{figure}
+  \begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+      \pie{20/Public sale, 30/VC, 16/Team, 18/Community, 16/Liquidity pool}
+    \end{tikzpicture}
+    \caption{Pie chart showing the distribution of tokens}
+    \label{fig:pie-chart}
+  \end{figure}
 
-The tokens allocated to the community, as illustrated in Figure \ref{fig:pie-chart}, will be distributed from the Swaptor contract.
-Upon swap execution, both the buyer and seller will be granted a single SWPTR token.
-Buyer and seller are motivated to hold the token as its price will grow proportional to Swaptor activity.
+  The tokens allocated to the community, as illustrated in Figure \ref{fig:pie-chart}, will be distributed from the Swaptor contract.
+  Tokens that are not distributed to venture capitalists will be available for purchase by the public. Any unsold tokens from the public sale will be allocated to the team.
+  Upon swap execution, both the buyer and seller will be granted a single SWPTR token.
+  Buyer and seller are motivated to hold the token as its price will grow proportional to Swaptor activity.
 
-\subsection{Utility}
-At present, the SWPTR token serves only to reflect the strength of the
-project and the level of traction it has gained. Rational investors
-who believe in the project's bright future may choose to hold the
-token, as its price increases every time a swap is executed.
+  \newpage
 
-During the community token distribution phase, it is expected that
-the price increase will be slightly lower, as two SWPTR tokens will
-be released from the Swaptor contract, giving actors the option to swap
-them for Ether. However, this scenario is highly unlikely, as the
-amount earned during this phase will be negligible, partly due to
-the gas fees required for swapping. Any impact on the price of SWPTR during
-community distribution phase due to actors who decide to swap tokens
-for Ether is partially dampened by the swap and burn mechanism executed
-by the Swaptor contract.
+  \subsection{Utility}
+  At present, the SWPTR token serves only to reflect the strength of the
+  project and the level of traction it has gained. Rational investors
+  who believe in the project's bright future may choose to hold the
+  token, as its price increases every time a swap is executed.
 
-\subsection{Vesting}
-Token vesting will occur at the end of every three-month period.
+  During the community token distribution phase, it is expected that
+  the price increase will be slightly lower, as two SWPTR tokens will
+  be released from the Swaptor contract, giving actors the option to swap
+  them for Ether. However, this scenario is highly unlikely, as the
+  amount earned during this phase will be negligible, partly due to
+  the gas fees required for swapping. Any impact on the price of SWPTR during
+  community distribution phase due to actors who decide to swap tokens
+  for Ether is partially dampened by the swap and burn mechanism executed
+  by the Swaptor contract.
+
+  \subsection{Vesting}
+  All tokens will be released within a 750 day (2 years and 20 days) period.
+  Token vesting is described by the following calculation:
+  \begin{equation}
+    T_{ps} = 0.34 \cdot T_{s} = 340000
+  \end{equation}
+
+  \begin{equation}
+    T_{vc} = 0.22 \cdot T_{s} = 220000
+  \end{equation}
+
+  \begin{equation}
+    T_{t} = 0.16 \cdot T_{s} = 160000
+  \end{equation}
+
+  \begin{equation}
+    T_{sum}  = T_{ps} + T_{vc} + T_{t} = 720000
+  \end{equation}
+
+  \begin{equation}
+    t = 750\;\text{days} = 6.48 \times 10^7\;\text{s}
+  \end{equation}
+
+  where $t$ denotes the total vesting period \\
+
+  \begin{equation}
+    G    = \frac{T_{sum}}{t} = 960\;\text{tokens/day}
+  \end{equation}
+
+  where $G$ denotes the amount of tokens released on a daily basis \\
+
+
+
 This vesting will apply to tokens acquired by venture capitalists,
 public sales, and the team. This measure has been introduced to
 increase the trust of the community by regulating token dumping and
 aligning the interests of the team with the project itself.
+
+\newpage
 
 \section{Roadmap}
 

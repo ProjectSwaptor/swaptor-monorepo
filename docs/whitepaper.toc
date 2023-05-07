@@ -6,10 +6,9 @@
 \contentsline {subsection}{\numberline {1.2}Off-chain Architecture}{3}{}%
 \contentsline {subsubsection}{\numberline {1.2.1}Backend}{3}{}%
 \contentsline {subsubsection}{\numberline {1.2.2}Frontend}{3}{}%
-\contentsline {subsubsection}{\numberline {1.2.3}Database \& Security}{4}{}%
 \contentsline {section}{\numberline {2}Tokenomics}{4}{}%
 \contentsline {subsection}{\numberline {2.1}Token Mechanics}{4}{}%
 \contentsline {subsection}{\numberline {2.2}Token Allocation}{4}{}%
-\contentsline {subsection}{\numberline {2.3}Utility}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Utility}{5}{}%
 \contentsline {subsection}{\numberline {2.4}Vesting}{5}{}%
-\contentsline {section}{\numberline {3}Roadmap}{5}{}%
+\contentsline {section}{\numberline {3}Roadmap}{6}{}%
