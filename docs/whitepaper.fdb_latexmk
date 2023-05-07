@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1683460772 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683460773 0
-  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683460770 9639 c6f6187f1722b3c2218003cbd599bb8c ""
+["pdflatex"] 1683461507 "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" "whitepaper.pdf" "whitepaper" 1683461508 0
+  "/Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex" 1683461507 9840 141c13090db423122014e75645a02953 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -136,10 +136,10 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1683188700 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1683188621 7883464 00e5102e3c431862e33559a86b5d17a4 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "ethereum.png" 1683290726 160579 86b356aa4636232f3e200c65d2a8b6b4 ""
-  "whitepaper.aux" 1683460773 1758 0bc896b186b41cbdeedf46f09b7d14b9 "pdflatex"
-  "whitepaper.tex" 1683460770 9639 c6f6187f1722b3c2218003cbd599bb8c ""
-  "whitepaper.toc" 1683460773 904 7ce23456b021f1af2bbf3efefe0b2cb6 "pdflatex"
+  "swaptor.png" 1683461043 13670 cda3eaf74dee99b795cc53966a1fe7dc ""
+  "whitepaper.aux" 1683461508 1758 0bc896b186b41cbdeedf46f09b7d14b9 "pdflatex"
+  "whitepaper.tex" 1683461507 9840 141c13090db423122014e75645a02953 ""
+  "whitepaper.toc" 1683461508 904 7ce23456b021f1af2bbf3efefe0b2cb6 "pdflatex"
   (generated)
   "whitepaper.aux"
   "whitepaper.log"
