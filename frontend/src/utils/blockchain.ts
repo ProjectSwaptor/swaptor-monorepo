@@ -9,6 +9,7 @@ import { CreateSwapEncodeArgs } from "@/types";
 import { CreateSwapArgsTypes } from "@/constants";
 import { WalletState } from "@web3-onboard/core";
 import { executeAsync } from "@/api/wrappers";
+import { getFee } from "@/api/swaptor-backend/oracles";
 
 export const getSigner = (wallet: WalletState) => {
   return new ethers.providers.Web3Provider(wallet.provider).getSigner();
