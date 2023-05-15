@@ -95,7 +95,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         const freeTrialEndTime = await getFreeTrialEndTime(signer);
 
         setIsFreemiumPeriod(+freeTrialEndTime < +currentBlockchainTimestamp);
-        setConnectedAddress(await signer.getAddress());
+        setConnectedAddress((await signer.getAddress()).toLowerCase());
         setNativeCurrency(CHAIN_TO_SYMBOL[chain]);
       };
 
