@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useConnectWallet } from "@web3-onboard/react";
 import { ethers } from "ethers";
 import { nanoid } from "nanoid";
 
 import { TokenData } from "@/types";
 import { createSwap } from "@/api/swaptor-backend/swaps";
-import { encodeSwapArguments, getSwapSignature } from "@/utils/blockchain";
+import {
+  encodeSwapArguments,
+  getSigner,
+  getSwapSignature,
+} from "@/utils/blockchain";
 import {
   SwapType,
   SWAP_TYPE_TO_TOKENS,
@@ -19,6 +23,10 @@ import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBlockchainTime } from "@/api/swaptor-backend/oracles";
+import {
+  checkERC20Allowance,
+  checkERC721Approval,
+} from "@/api/blockchain/common";
 
 enum SwapStatus {
   INIT,
@@ -82,6 +90,7 @@ const SwapButton = ({
   const router = useRouter();
 
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
+  const [connectedAddress, setConnectedAddress] = useState<string>();
   const [{ wallet }] = useConnectWallet();
 
   const { address: offeredTokenAddress, tokenData: offeredTokenData } =
@@ -92,6 +101,57 @@ const SwapButton = ({
   const { offeredTokenType, wantedTokenType } = swapType
     ? SWAP_TYPE_TO_TOKENS[swapType]
     : { offeredTokenType: TokenType.ERC20, wantedTokenType: TokenType.ERC20 };
+
+  useEffect(() => {
+    if (wallet) {
+      setConnectedAddress(wallet.accounts[0].address);
+    }
+  }, [wallet]);
+
+  useEffect(() => {
+    const checkApprovals = async () => {
+      if (!wallet || connectedAddress === undefined) {
+        return;
+      }
+
+      let approved = false;
+
+      if (offeredTokenType === TokenType.ERC20) {
+        approved = await checkERC20Allowance(
+          offeredTokenAddress,
+          await parseTokenData(offeredTokenType, offeredTokenData),
+          connectedAddress,
+          getSigner(wallet!)
+        );
+      } else {
+        approved = await checkERC721Approval(
+          offeredTokenAddress,
+          offeredTokenData,
+          connectedAddress,
+          getSigner(wallet!)
+        );
+      }
+
+      if (!approved && swapStatus === SwapStatus.APPROVED) {
+        setSwapStatus(SwapStatus.INIT);
+      }
+
+      if (approved) {
+        setSwapStatus(SwapStatus.APPROVED);
+      }
+    };
+
+    checkApprovals();
+  }, [
+    wallet,
+    connectedAddress,
+    offeredTokenAddress,
+    wantedTokenAddress,
+    wantedTokenData,
+    wantedTokenType,
+    offeredTokenType,
+    offeredTokenData,
+  ]);
 
   const handleApprove = async () => {
     setSwapStatus(SwapStatus.APPROVAL_PENDING);
