@@ -1,1 +1,6 @@
-export const FEE_DECIMALS = 6;
+export const FEE_DECIMALS = 8;
+
+export enum ExitCode {
+  SUCCESS,
+  FAIL,
+}
