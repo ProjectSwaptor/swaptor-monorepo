@@ -43,13 +43,15 @@
 
 \begin{center}
   \textbf{\Large Swaptor Whitepaper} \\
-
   \vspace{1.5cc}
-  { \sc Marko Ivanković}\\
 
-  \vspace{0.3 cm}
+  { \sc Berry Block}\\
+  \vspace{1.5cc}
 
-  {\small Berry Block, marko@berryblock.io}
+  \begin{tabular}{c c}
+    \textsc{Marko Ivanković} & \textsc{Domagoj Ravlić} \\
+    marko@berryblock.io      & domagoj@berryblock.io   \\
+  \end{tabular}
 \end{center}
 \vspace{1.5cc}
 
@@ -96,118 +98,94 @@ In the future, Swaptor intends to extend its support to include native currency 
 \subsubsection{Fees}
 To accept the swap, an address will need to pay a fixed fee of \$$5$ in the native currency, which is calculated using Chainlink oracles\cite{chainlink}. It should be noted that the fee is not fixed and may be subject to change.
 
-  \subsection{Off-chain Architecture}
+\subsection{Off-chain Architecture}
 
-  \subsubsection{Backend}
-  The purpose of the backend is to reduce the number of operations on the blockchain,
-  which would result in higher gas fees paid by users. It also caches some information
-  retrieved from the blockchain to improve the user experience, such as reducing wait
-  times. Upon client request, it retrieves details about swaps, including the original
-  swap terms and signature.
+\subsubsection{Backend}
+The purpose of the backend is to reduce the number of operations on the blockchain,
+which would result in higher gas fees paid by users. It also caches some information
+retrieved from the blockchain to improve the user experience, such as reducing wait
+times. Upon client request, it retrieves details about swaps, including the original
+swap terms and signature.
 
-  \subsubsection{Frontend}
-  The Swaptor frontend application is a user interface that allows users to interact
-  with the Swaptor protocol on the supported networks. It enables users to easily swap
-  supported token types without the need for a centralized exchange. Each user is capable
-  of creating, deleting, sharing and accepting a swap. The application is accessible through a
-  web browser or mobile device and is designed to be user-friendly and intuitive.
+\subsubsection{Frontend}
+The Swaptor frontend application is a user interface that allows users to interact
+with the Swaptor protocol on the supported networks. It enables users to easily swap
+supported token types without the need for a centralized exchange. Each user is capable
+of creating, deleting, sharing and accepting a swap. The application is accessible through a
+web browser or mobile device and is designed to be user-friendly and intuitive.
 
-  \section{Tokenomics}
+\section{Swaptor token (SWPTR)}
 
-  \subsection{Token Mechanics}
+Swaptor introduces its very own token called the Swaptor Token (SWPTR), which plays a
+crucial role in the Swaptor governance model. By actively participating in voting rounds,
+SWPTR holders have the opportunity to unlock a share of the rewards generated from Swaptor's swapping fees.
+This mechanism allows for a fair and inclusive system that rewards only those who contribute to the platform's decision-making process.
 
-  The price of Swaptor Token (SWPTR) is influenced by several factors,
-  including activity on the Swaptor Protocol, the price of Ether,
-  and liquidity pool activity. As mentioned earlier, every time a
-  successful swap occurs, a fixed fee in the native currency is
-  exchanged for SWPTR token in the Ether/SWPTR liquidity pool.
-  The amount of SWPTR token is then burned, leading to an increase
-  in the price of SWPTR token.
+\subsection{Governance}
 
-  Given that Ether is on the other side of the pool, the price of
-  SWPTR is directly affected by the price of Ether. The decision to
-  use Ether as the currency for the exchange fee is based on the fact
-  that users already pay gas fees in Ether, and adding an additional
-  swap would result in gas wastage. Moreover, Ether is the backbone of
-  many other coins, and a decrease in its price would effectively
-  eliminate a significant portion of the Ethereum DeFi ecosystem.
+\subsubsection{Initial stage}
+As an essential part of the Swaptor governance model, the initial stage of the project will
+involve the Swaptor developer team taking on the role of the Swaptor Committee. This dedicated
+team will be responsible for facilitating the governance process by overseeing the submission of proposals,
+managing the voting procedures, and ensuring the seamless operation of the Swaptor project.
+The Swaptor Committee plays a crucial role in creating important questions and proposals that are later shared
+with the Swaptor community for voting.
 
+\subsubsection{Swaptor DAO}
+Over time, the influence of the Swaptor developer team within the project will gradually diminish.
+Initially, they will actively listen to the community's feedback and opinions through channels such as Twitter and Discord,
+incorporating necessary code changes accordingly. Ultimately, the Swaptor project will evolve into a fully-fledged
+decentralized autonomous organization (DAO). In this future state, any holder of the SWPTR token will have the
+ability to propose changes to the project, and only those who possess SWPTR tokens will be eligible to participate
+in the voting process. The voting power will be determined by the amount of SWPTR tokens held, as well as the proportionate
+share of fees allocated as rewards for voters. After each vote, SWPTR holders will have the chance to unlock a portion of these rewards,
+which promotes a fair and interactive ecosystem.
 
+\vspace{3cc}
+TU CE ICI DIJAGRAM KOJI PRIKAZUJE KAKO FUNKCIONIRA PREDLAGANJE PROMJENA
+U PROTOKOLU U POCETKU I BIT CE JEDAN DIJAGRAM KOJI PRIKAZUJE KAKO BI TO
+TREBALO IZGLEDATI U BUDUCNOSTI (KADA POSTIGNEMO POTPUNU DECENTRALIZACIJU).
+TAKODER CE SE PRIKAZATI KAKO USERI DOBIVAJU SHARE OD FEE-EVA IZ TREASURY-A
 
+\newpage
 
-  \subsection{Token Allocation}
+\subsection{Tokenomics}
+The maximum supply of Swaptor tokens is set at 1,000,000. These tokens will be introduced in two distinct phases,
+each serving a specific purpose in the evolution of the project.
 
-  Total of $1000000$ (one million) SWPTR tokens will be minted and distributed over time as described by Figure \ref{fig:pie-chart}.
+\subsubsection{First phase}
+In the first phase, which focuses on the initial stage of the project, the Swaptor developer team aims to involve
+and empower contributors from the community. During this phase, a total of 300,000 tokens
+(30\% of the total supply) will be made available for purchase.
+The pricing of these tokens will be determined by the Swaptor developer team, ensuring a fair and reasonable value
+that reflects the project's goals and potential.
 
-  \begin{figure}[h]
-    \centering
-    \begin{tikzpicture}
-      \pie{20/Public sale, 30/VC, 16/Team, 34/Community}
-    \end{tikzpicture}
-    \caption{Pie chart showing the distribution of tokens}
-    \label{fig:pie-chart}
-  \end{figure}
+\subsubsection{Second phase}
+Moving to the second phase, the distribution of the remaining 700,000 tokens
+(70\% of the total supply) takes a different approach. Rather than being sold or offered directly,
+tokens will be minted exclusively through successful swaps conducted via the Swaptor smart contract.
+With each successful swap, where users exchange one cryptocurrency for another using Swaptor,
+one token will be allocated to the participant. This mechanism promotes active engagement with the platform
+and incentivizes users to participate in swaps, contributing to the growth and liquidity of the Swaptor ecosystem.
+It is important to mention that every token that is not sold in the first phase will be minted during this phase.
 
-  The tokens allocated to the community, as illustrated in Figure \ref{fig:pie-chart}, will be distributed from the Swaptor contract.
-  Tokens that are not distributed to venture capitalists will be available for purchase by the public. Any unsold tokens from the public sale will be allocated to the team.
-  Upon swap execution, both the buyer and seller will be granted a single SWPTR token.
-  Buyer and seller are motivated to hold the token as its price will grow proportional to Swaptor activity.
+\vspace{1.5cc}
+By adopting this two-phase approach, Swaptor aims to involve early contributors while also fostering
+a dynamic and sustainable token distribution model. It ensures that tokens are not only accessible to
+those who support the project from its inception but also rewards users who actively participate in successful swaps,
+aligning incentives and creating a vibrant community of token holders.
 
-  \newpage
+\vspace{2cc}
 
-  \subsection{Utility}
-  At present, the SWPTR token serves only to reflect the strength of the
-  project and the level of traction it has gained. Rational investors
-  who believe in the project's bright future may choose to hold the
-  token, as its price increases every time a swap is executed.
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \pie[text=inside]{30/Public sale, 70/Protocol minting}
+  \end{tikzpicture}
+  \caption{Token distribution}
+  \label{fig:pie-chart}
+\end{figure}
 
-  During the community token distribution phase, it is expected that
-  the price increase will be slightly lower, as two SWPTR tokens will
-  be released from the Swaptor contract, giving actors the option to swap
-  them for Ether. However, this scenario is highly unlikely, as the
-  amount earned during this phase will be negligible, partly due to
-  the gas fees required for swapping. Any impact on the price of SWPTR during
-  community distribution phase due to actors who decide to swap tokens
-  for Ether is partially dampened by the swap and burn mechanism executed
-  by the Swaptor contract.
-
-  \subsection{Vesting}
-  All tokens will be released within a 750 day (2 years and 20 days) period.
-  Token vesting is described by the following calculation:
-  \begin{equation}
-    T_{ps} = 0.34 \cdot T_{s} = 340000
-  \end{equation}
-
-  \begin{equation}
-    T_{vc} = 0.22 \cdot T_{s} = 220000
-  \end{equation}
-
-  \begin{equation}
-    T_{t} = 0.16 \cdot T_{s} = 160000
-  \end{equation}
-
-  \begin{equation}
-    T_{sum}  = T_{ps} + T_{vc} + T_{t} = 720000
-  \end{equation}
-
-  \begin{equation}
-    t = 750\;\text{days} = 6.48 \times 10^7\;\text{s}
-  \end{equation}
-
-  where $t$ denotes the total vesting period \\
-
-  \begin{equation}
-    G    = \frac{T_{sum}}{t} = 960\;\text{tokens/day}
-  \end{equation}
-
-  where $G$ denotes the amount of tokens released on a daily basis \\
-
-
-
-This vesting will apply to tokens acquired by venture capitalists,
-public sales, and the team. This measure has been introduced to
-increase the trust of the community by regulating token dumping and
-aligning the interests of the team with the project itself.
 
 \newpage
 

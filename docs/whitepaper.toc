@@ -6,9 +6,11 @@
 \contentsline {subsection}{\numberline {1.2}Off-chain Architecture}{3}{}%
 \contentsline {subsubsection}{\numberline {1.2.1}Backend}{3}{}%
 \contentsline {subsubsection}{\numberline {1.2.2}Frontend}{3}{}%
-\contentsline {section}{\numberline {2}Tokenomics}{4}{}%
-\contentsline {subsection}{\numberline {2.1}Token Mechanics}{4}{}%
-\contentsline {subsection}{\numberline {2.2}Token Allocation}{4}{}%
-\contentsline {subsection}{\numberline {2.3}Utility}{5}{}%
-\contentsline {subsection}{\numberline {2.4}Vesting}{5}{}%
+\contentsline {section}{\numberline {2}Swaptor token (SWPTR)}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Governance}{4}{}%
+\contentsline {subsubsection}{\numberline {2.1.1}Initial stage}{4}{}%
+\contentsline {subsubsection}{\numberline {2.1.2}Swaptor DAO}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Tokenomics}{5}{}%
+\contentsline {subsubsection}{\numberline {2.2.1}First phase}{5}{}%
+\contentsline {subsubsection}{\numberline {2.2.2}Second phase}{5}{}%
 \contentsline {section}{\numberline {3}Roadmap}{6}{}%
