@@ -582,6 +582,14 @@ INPUT ./swaptor.png
 INPUT ./swaptor.png
 INPUT swaptor.png
 INPUT ./swaptor.png
+INPUT ./swaptor.png
+INPUT ./swaptor.png
+INPUT swaptor.png
+INPUT ./swaptor.png
+INPUT ./swaptor.png
+INPUT ./swaptor.png
+INPUT swaptor.png
+INPUT ./swaptor.png
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm
 INPUT whitepaper.aux
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
