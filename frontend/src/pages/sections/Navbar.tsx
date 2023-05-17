@@ -26,11 +26,6 @@ const Navbar = () => {
         </Link>
 
         <div className="flex gap-x-12 items-center ml-auto">
-          <button className="relative btn-secondary flex items-center p-2 px-4 bg-teal-800/60 text-white">
-            <Link href={url} target="_blank" rel="noopener noreferrer">
-              Get Test Tokens
-            </Link>
-          </button>
           <button>
             <Link href="https://discord.com/invite/AufTrXDwzS" target="_blank">
               Discord
@@ -46,6 +41,11 @@ const Navbar = () => {
           </button>
           <button>
             <Link href={"/faq"}>FAQ</Link>
+          </button>
+          <button className="relative btn-secondary flex items-center p-2 px-4 -mr-6 bg-teal-800/60 text-white">
+            <Link href={url} target="_blank" rel="noopener noreferrer">
+              Get Test Tokens
+            </Link>
           </button>
           {router.pathname.startsWith("/swap") ? (
             <ConnectWallet />
