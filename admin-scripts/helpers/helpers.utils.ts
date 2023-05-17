@@ -22,16 +22,21 @@ export class MessageLogger {
           console.log(this.messages.errorMessage);
         }
         break;
+
       case MessageType.Start:
         if (this.messages.startMessage) {
           console.log(this.messages.startMessage);
         }
         break;
+
       case MessageType.Success:
         if (this.messages.successMessage) {
           console.log(this.messages.successMessage);
         }
         break;
+
+      default:
+        throw new Error("Invalid message type");
     }
   }
 }
