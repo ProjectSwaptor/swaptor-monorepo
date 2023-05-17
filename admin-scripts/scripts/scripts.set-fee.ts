@@ -6,13 +6,13 @@ import * as SwaptorJSON from "../../backend/src/abis/Swaptor.json";
 import { SwaptorConfigModel } from "../../backend/src/swaps/swaps.models";
 import { SwaptorProperty } from "../../backend/src/swaps/swaps.constants";
 import { FEE_DECIMALS } from "../constants/constants.swaptor";
+import { MessageLogger, tryCatchFail } from "../helpers/helpers.utils";
+import { DB_CONNECTION_STRING, SWAPTOR_PRIVATE_KEY } from "../environment";
 import {
   CHAIN_TO_RPC,
   Chain,
   SWAPTOR_ADDRESSES,
 } from "../../backend/src/common/common.constants";
-import { MessageLogger, tryCatchFail } from "../helpers/helpers.utils";
-import { DB_CONNECTION_STRING, SWAPTOR_PRIVATE_KEY } from "../environment";
 
 const updateSwaptorFeeDb = async (fee: string) => {
   const logger = new MessageLogger({
@@ -48,11 +48,6 @@ const updateSwaptorFeeContract = async (fee: string) => {
   }
 };
 
-const setFee = async (fee: string) => {
-  await updateSwaptorFeeDb(fee);
-  await updateSwaptorFeeContract(fee);
-};
-
 const main = async () => {
   await mongoose.connect(DB_CONNECTION_STRING);
 
@@ -63,7 +58,9 @@ const main = async () => {
   }
 
   const fee = ethers.parseUnits(args[0], FEE_DECIMALS).toString();
-  await setFee(fee);
+
+  await updateSwaptorFeeDb(fee);
+  await updateSwaptorFeeContract(fee);
 };
 
 main();
