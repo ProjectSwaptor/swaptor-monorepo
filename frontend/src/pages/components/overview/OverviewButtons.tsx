@@ -122,7 +122,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       displayFailureMessage(blockchainTimeError.message);
       return;
     }
-    const blockchainTime = blockchainTimeResponse!.data.time;
+    const blockchainTime = blockchainTimeResponse!.data.chainTime;
 
     const feeInWei =
       +freeTrialEndTime < +blockchainTime
