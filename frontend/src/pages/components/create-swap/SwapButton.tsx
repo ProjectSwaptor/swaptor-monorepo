@@ -24,8 +24,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBlockchainTime } from "@/api/swaptor-backend/oracles";
 import {
-  checkERC20Allowance,
-  checkERC721Approval,
+  checkTokenApprovals,
 } from "@/api/blockchain/common";
 
 enum SwapStatus {
@@ -109,46 +108,31 @@ const SwapButton = ({
   }, [wallet]);
 
   useEffect(() => {
-    const checkApprovals = async () => {
-      if (!wallet || connectedAddress === undefined) {
-        return;
-      }
-
-      let approved = false;
-
-      if (offeredTokenType === TokenType.ERC20) {
-        approved = await checkERC20Allowance(
+    const checkAllowance = async () => {
+      if (wallet) {
+        const alreadyApproved = await checkTokenApprovals(
+          offeredTokenType,
           offeredTokenAddress,
-          await parseTokenData(offeredTokenType, offeredTokenData),
-          connectedAddress,
-          getSigner(wallet!)
+          parseTokenData(offeredTokenType, offeredTokenData),
+          connectedAddress!,
+          getSigner(wallet)
         );
-      } else {
-        approved = await checkERC721Approval(
-          offeredTokenAddress,
-          offeredTokenData,
-          connectedAddress,
-          getSigner(wallet!)
-        );
-      }
+        
+        if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
+          setSwapStatus(SwapStatus.INIT);
+        }
 
-      if (!approved && swapStatus === SwapStatus.APPROVED) {
-        setSwapStatus(SwapStatus.INIT);
-      }
-
-      if (approved) {
-        setSwapStatus(SwapStatus.APPROVED);
+        if (alreadyApproved) {
+          setSwapStatus(SwapStatus.APPROVED);
+        }
       }
     };
 
-    checkApprovals();
+    checkAllowance();
   }, [
     wallet,
     connectedAddress,
     offeredTokenAddress,
-    wantedTokenAddress,
-    wantedTokenData,
-    wantedTokenType,
     offeredTokenType,
     offeredTokenData,
   ]);

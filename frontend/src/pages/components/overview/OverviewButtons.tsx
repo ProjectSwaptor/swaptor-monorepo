@@ -22,8 +22,7 @@ import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
 import {
-  checkERC20Allowance,
-  checkERC721Approval,
+  checkTokenApprovals,
 } from "@/api/blockchain/common";
 
 enum SwapStatus {
@@ -74,41 +73,27 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     : { wantedTokenType: TokenType.ERC20 };
 
   useEffect(() => {
-    const checkApprovals = async () => {
-      if (!wallet || connectedAddress === undefined) {
-        return;
-      }
-
-      let approved = false;
-
-      if (wantedTokenType === TokenType.ERC20) {
-        approved = await checkERC20Allowance(
+    const checkAllowance = async () => {
+      if (wallet) {
+        const alreadyApproved = await checkTokenApprovals(
+          wantedTokenType,
           wantedTokenAddress,
           wantedTokenData,
           connectedAddress,
-          getSigner(wallet!)
+          getSigner(wallet)
         );
-      } else {
-        approved = await checkERC721Approval(
-          wantedTokenAddress,
-          wantedTokenData,
-          connectedAddress,
-          getSigner(wallet!)
-        );
-      }
 
-      console.log(approved);
+        if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
+          setSwapStatus(SwapStatus.INIT);
+        }
 
-      if (!approved && swapStatus === SwapStatus.APPROVED) {
-        setSwapStatus(SwapStatus.INIT);
-      }
-
-      if (approved) {
-        setSwapStatus(SwapStatus.APPROVED);
+        if (alreadyApproved) {
+          setSwapStatus(SwapStatus.APPROVED);
+        }
       }
     };
 
-    checkApprovals();
+    checkAllowance();
   }, [
     wallet,
     connectedAddress,
@@ -185,8 +170,6 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       +freeTrialEndTime < +blockchainTime
         ? getFeeInWei(res!.data.price)
         : BigNumber.from(0);
-
-    console.log(feeInWei.toString());
 
     const { res: swapReceipt, err: swapErr } = await acceptSwap(
       signer,
