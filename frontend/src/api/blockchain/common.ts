@@ -1,6 +1,6 @@
 import { BigNumber, ethers, Signer } from "ethers";
 
-import { CHAIN_TO_RPC, SupportedChain } from "@/constants";
+import { CHAIN_TO_RPC, SupportedChain, TokenType } from "@/constants";
 import { executeAsync } from "../wrappers";
 import { SWAPTOR_ADDRESS } from "@/environment";
 import { getERC20Contract, getERC721Contract } from "@/utils/blockchain";
@@ -19,44 +19,71 @@ export const getChainTime = async (chain: SupportedChain) => {
 
 export const checkERC20Allowance = async (
   tokenAddress: string,
-  tokenData: string,
+  tokenAmount: string,
   connectedAddress: string,
   signer: Signer
-): Promise<boolean> => {
+): Promise<boolean | undefined> => {
   try {
-    console.log(tokenAddress, connectedAddress, SWAPTOR_ADDRESS);
     const allowance = (
       await getERC20Contract(tokenAddress)
         .connect(signer)
         .allowance(connectedAddress, SWAPTOR_ADDRESS)
     ).toString();
 
-    console.log(allowance, tokenData);
+    return BigNumber.from(allowance).gte(BigNumber.from(tokenAmount));
+  } catch (e) {
+    console.log(e);
 
-    return BigNumber.from(allowance).gte(BigNumber.from(tokenData));
-  } catch (e: any) {
-    console.log(e.message);
-    return false;
+    return;
   }
 };
 
 export const checkERC721Approval = async (
   tokenAddress: string,
+  tokenId: string,
+  connectedAddress: string,
+  signer: Signer
+): Promise<boolean | undefined> => {
+  try {
+    const token = getERC721Contract(tokenAddress).connect(signer);
+    const ownerOf = await token.ownerOf(tokenId);
+    const approved = await token.getApproved(tokenId);
+
+    return (
+      ownerOf.toLowerCase() === connectedAddress.toLowerCase() &&
+      approved.toLowerCase() === SWAPTOR_ADDRESS!.toLowerCase()
+    );
+  } catch (e) {
+    console.log(e);
+
+    return;
+  }
+};
+
+export const checkTokenApprovals = async (
+  tokenType: TokenType,
+  tokenAddress: string,
   tokenData: string,
   connectedAddress: string,
   signer: Signer
-): Promise<boolean> => {
-  try {
-    const token = getERC721Contract(tokenAddress).connect(signer);
-    const ownerOf = await token.ownerOf(tokenData);
-    const approved = await token.getApproved(tokenData);
+) => {
+  let alreadyApproved: boolean | undefined;
 
-    return (
-      ownerOf.toLowerCase() === connectedAddress &&
-      approved.toLowerCase() === SWAPTOR_ADDRESS!.toLowerCase()
+  if (tokenType === TokenType.ERC20) {
+    alreadyApproved = await checkERC20Allowance(
+      tokenAddress,
+      tokenData,
+      connectedAddress,
+      signer
     );
-  } catch (e: any) {
-    console.log(e.message);
-    return false;
+  } else {
+    alreadyApproved = await checkERC721Approval(
+      tokenAddress,
+      tokenData,
+      connectedAddress,
+      signer
+    );
   }
+
+  return alreadyApproved;
 };
