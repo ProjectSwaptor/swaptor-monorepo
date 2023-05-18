@@ -21,7 +21,7 @@ export const getBlockchainTime = async (chain: SupportedChain) => {
   );
 };
 
-type Fee = { currency: string; fee: string };
+type Fee = { fee: string };
 
 export const getFee = async (chain: SupportedChain) => {
   return await executeAsync(

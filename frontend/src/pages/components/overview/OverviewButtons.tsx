@@ -54,27 +54,31 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   } = router;
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      const chain = connectedChain!.id as SupportedChain;
-      const {
-        err: errorNativeCurrencyPriceInUsd,
-        res: responseNativeCurrencyPriceInUsd,
-      } = await getNativeCurrencyPrice(chain);
-      const { err: errorFeeInUsd, res: responseFeeInUsd } = await getFee(chain);
-
-      if (!errorNativeCurrencyPriceInUsd && !errorFeeInUsd) {
-        setFeeInNativeCurrency(
-          (
-            +responseFeeInUsd!.data.fee /
-            +responseNativeCurrencyPriceInUsd!.data.price
-          )
-            .toFixed(2)
-            .toString()
+    if (connectedChain) {
+      const interval = setInterval(async () => {
+        const chain = connectedChain!.id as SupportedChain;
+        const {
+          err: errorNativeCurrencyPriceInUsd,
+          res: responseNativeCurrencyPriceInUsd,
+        } = await getNativeCurrencyPrice(chain);
+        const { err: errorFeeInUsd, res: responseFeeInUsd } = await getFee(
+          chain
         );
-      }
-    }, REFRESH_FEE_TIME_IN_MS);
 
-    return () => clearInterval(interval);
+        if (!errorNativeCurrencyPriceInUsd && !errorFeeInUsd) {
+          setFeeInNativeCurrency(
+            (
+              +responseFeeInUsd!.data.fee /
+              +responseNativeCurrencyPriceInUsd!.data.price
+            )
+              .toFixed(2)
+              .toString()
+          );
+        }
+      }, REFRESH_FEE_TIME_IN_MS);
+
+      return () => clearInterval(interval);
+    }
   }, []);
 
   useEffect(() => {
@@ -90,11 +94,11 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
           return err;
         }
         const currentBlockchainTimestamp =
-          responseBlockchainTimeResponse!.data.time;
+          responseBlockchainTimeResponse!.data.chainTime;
 
         const freeTrialEndTime = await getFreeTrialEndTime(signer);
 
-        setIsFreemiumPeriod(+freeTrialEndTime < +currentBlockchainTimestamp);
+        setIsFreemiumPeriod(+freeTrialEndTime > +currentBlockchainTimestamp);
         setConnectedAddress((await signer.getAddress()).toLowerCase());
         setNativeCurrency(CHAIN_TO_SYMBOL[chain]);
       };
