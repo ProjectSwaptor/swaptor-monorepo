@@ -31,21 +31,25 @@ const updateSwaptorFeeDb = async (fee: string) => {
 };
 
 const updateSwaptorFeeContract = async (fee: string) => {
-  for (const [chain, address] of Object.entries(SWAPTOR_ADDRESSES)) {
-    const provider = new ethers.JsonRpcProvider(CHAIN_TO_RPC[chain as Chain]);
-    const signer = new ethers.Wallet(SWAPTOR_PRIVATE_KEY, provider);
-    const swaptor = new ethers.Contract(address, SwaptorJSON.abi, signer);
+  const feeSetters = Object.entries(SWAPTOR_ADDRESSES).map(
+    ([chain, address]) => {
+      const provider = new ethers.JsonRpcProvider(CHAIN_TO_RPC[chain as Chain]);
+      const signer = new ethers.Wallet(SWAPTOR_PRIVATE_KEY, provider);
+      const swaptor = new ethers.Contract(address, SwaptorJSON.abi, signer);
 
-    const logger = new MessageLogger({
-      startMessage: `Setting fee for Swaptor on ${chain}`,
-      successMessage: `Successfully set fee for Swaptor on ${chain}`,
-      errorMessage: `Error updating Swaptor fee on ${chain}`,
-    });
+      const logger = new MessageLogger({
+        startMessage: `Setting fee for Swaptor on ${chain}`,
+        successMessage: `Successfully set fee for Swaptor on ${chain}`,
+        errorMessage: `Error updating Swaptor fee on ${chain}`,
+      });
 
-    const handler = async () => await swaptor.setFeeInUsd(fee);
+      const handler = async () => await swaptor.setFeeInUsd(fee);
 
-    await tryCatchFail(handler, logger);
-  }
+      return tryCatchFail(handler, logger);
+    }
+  );
+
+  await Promise.all(feeSetters);
 };
 
 const main = async () => {
@@ -53,8 +57,8 @@ const main = async () => {
 
   const args = process.argv[2];
 
-  if (!args || args.length === 0) {
-    throw new Error("Missing argument for fee");
+  if (args.length !== 3) {
+    throw new Error("Missing argument for fee or too many arguments given");
   }
 
   const fee = ethers.parseUnits(args[0], FEE_DECIMALS).toString();
