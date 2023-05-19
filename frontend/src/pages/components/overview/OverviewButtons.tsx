@@ -78,7 +78,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         const alreadyApproved = await checkTokenApprovals(
           wantedTokenType,
           wantedTokenAddress,
-          wantedTokenData,
+          parseTokenData(wantedTokenType, wantedTokenData),
           connectedAddress,
           getSigner(wallet)
         );
