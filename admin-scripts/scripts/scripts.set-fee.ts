@@ -53,18 +53,33 @@ const updateSwaptorFeeContract = async (fee: string) => {
 };
 
 const main = async () => {
-  await mongoose.connect(DB_CONNECTION_STRING);
+  const fee = process.env.npm_config_fee;
+  const dbOnly = process.env.npm_config_db_only;
+  const contractsOnly = process.env.npm_config_contracts_only;
 
-  const args = process.argv[2];
-
-  if (args.length !== 3) {
-    throw new Error("Missing argument for fee or too many arguments given");
+  if (!fee) {
+    throw new Error("Fee not specified");
   }
 
-  const fee = ethers.parseUnits(args[0], FEE_DECIMALS).toString();
+  if (dbOnly && contractsOnly) {
+    throw new Error("Cannot specify both db-only and contracts-only");
+  }
 
-  await updateSwaptorFeeDb(fee);
-  await updateSwaptorFeeContract(fee);
+  const parsedFee = ethers.parseUnits(fee, FEE_DECIMALS).toString();
+  await mongoose.connect(DB_CONNECTION_STRING);
+
+  if (dbOnly) {
+    await updateSwaptorFeeDb(parsedFee);
+    return;
+  }
+
+  if (contractsOnly) {
+    await updateSwaptorFeeContract(parsedFee);
+    return;
+  }
+
+  await updateSwaptorFeeDb(parsedFee);
+  await updateSwaptorFeeContract(parsedFee);
 };
 
 main();
