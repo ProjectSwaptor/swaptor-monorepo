@@ -7,6 +7,14 @@ export const ONE_DAY_IN_SECONDS = 86400;
 
 export const SWAP_ID_LENGTH = 36;
 
+export enum SwapStatus {
+  INIT,
+  APPROVAL_PENDING,
+  APPROVED,
+  FINALIZATION_PENDING,
+  FINALIZED,
+}
+
 export enum TokenType {
   ERC721 = "ERC721",
   ERC20 = "ERC20",
