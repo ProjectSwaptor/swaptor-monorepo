@@ -27,7 +27,7 @@ export const getSwapsForAddress = async (address: string) => {
   );
 };
 
-type OracleBlockchainTime = { chain: SupportedChain; time: string };
+type OracleBlockchainTime = { chainTime: string };
 
 export const getBlockchainTime = async (chain: SupportedChain) => {
   return await executeAsync(
