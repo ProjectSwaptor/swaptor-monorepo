@@ -3,16 +3,19 @@ import { BigNumber, ethers } from "ethers";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import LoadingSpinnerIcon from "../icons/LoadingSpinnerIcon";
 import ShareSwapModal from "./ShareSwapModal";
 import { GetSwapDto } from "@/constants/blockchain/types";
 import { acceptSwap, getFreeTrialEndTime } from "@/api/blockchain/swap";
 import { FRONTEND_URL } from "@/environment";
-import { SupportedChain, SWAP_TYPE_TO_TOKENS, TokenType } from "@/constants";
+import {
+  SupportedChain,
+  SwapStatus,
+  SWAP_TYPE_TO_TOKENS,
+  TokenType,
+} from "@/constants";
 import { getFeeInWei, getSigner } from "@/utils/blockchain";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { approve } from "@/api/token-contract";
 import { parseTokenData } from "@/utils/token";
 import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import {
@@ -21,20 +24,24 @@ import {
 } from "@/api/swaptor-backend/swaps";
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
+import SwitchChain from "../SwitchChain";
+import { displayFailureMessage, displaySuccessMessage } from "@/utils/toasts";
+import { handleApprove } from "@/api/blockchain/common";
 
-enum SwapStatus {
-  INIT,
-  APPROVED,
-}
+const ACTIVE_BUTTON_STYLE =
+  "bg-teal-400 hover:bg-teal-500 border border-teal-400 hover:border-teal-500 transition text-black font-semibold rounded-lg py-2";
+const INACTIVE_BUTTON_STYLE =
+  "bg-gray-700 text-gray-400 border border-gray-700 transition font-semibold animate-pulse rounded-lg py-2";
+
+const SUCCESS_MESSAGE = "Approval successful! Accept Swap to continue...";
 
 const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const [connectedAddress, setConnectedAddress] = useState("");
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
-  const [waitingForTx, setWaitingForTx] = useState(false);
   const [active, setActive] = useRecoilState(swapActive);
 
-  const [{ connectedChain }] = useSetChain();
+  const [{ chains, connectedChain }] = useSetChain();
   const [{ wallet }, connect] = useConnectWallet();
 
   const router = useRouter();
@@ -62,43 +69,26 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     ? SWAP_TYPE_TO_TOKENS[swapType]
     : { wantedTokenType: TokenType.ERC20 };
 
-  const displaySuccessMessage = () =>
-    toast.success("Success!", { autoClose: 3000, position: "top-center" });
-  const displayFailureMessage = () =>
-    toast.error("Something went wrong.", {
-      autoClose: 3000,
-      position: "top-center",
-    });
-
   const handleShareClick = () => {
     setShareModalVisible(true);
   };
 
-  const handleApprove = async () => {
-    setWaitingForTx(true);
-
-    const { err } = await approve(
-      wallet!,
+  const handleApproveForAcceptSwap = async () => {
+    await handleApprove(
+      setSwapStatus,
       wantedTokenType,
       wantedTokenAddress,
-      parseTokenData(wantedTokenType, wantedTokenData)
+      connectedAddress!,
+      wallet!,
+      parseTokenData(wantedTokenType, wantedTokenData),
+      SUCCESS_MESSAGE
     );
-
-    setWaitingForTx(false);
-
-    if (!err) {
-      setSwapStatus(SwapStatus.APPROVED);
-
-      displaySuccessMessage();
-    } else {
-      displayFailureMessage();
-    }
   };
 
   const handleAccept = async () => {
-    const signer = getSigner(wallet!);
+    setSwapStatus(SwapStatus.FINALIZATION_PENDING);
 
-    setWaitingForTx(true);
+    const signer = getSigner(wallet!);
 
     const { err, res } = await getNativeCurrencyPrice(
       connectedChain!.id as SupportedChain
@@ -112,17 +102,13 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     const { err: blockchainTimeError, res: blockchainTimeResponse } =
       await getBlockchainTime(connectedChain!.id as SupportedChain);
 
-    const displayFailureMessage = (error: string) =>
-      toast.error("Something went wrong: " + error, {
-        autoClose: 3000,
-        position: "top-center",
-      });
-
     if (blockchainTimeError) {
+      setSwapStatus(SwapStatus.APPROVED);
       displayFailureMessage(blockchainTimeError.message);
+
       return;
     }
-    const blockchainTime = blockchainTimeResponse!.data.time;
+    const blockchainTime = blockchainTimeResponse!.data.chainTime;
 
     const feeInWei =
       +freeTrialEndTime < +blockchainTime
@@ -135,16 +121,19 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       feeInWei
     );
 
-    setWaitingForTx(false);
-
     if (swapErr) {
-      toast.error("Something went wrong: " + swapErr, {
-        autoClose: 3000,
-        position: "top-center",
-      });
+      setSwapStatus(SwapStatus.APPROVED);
+      const errorMessage = swapErr.message.includes("user rejected transaction")
+        ? "Accept Swap rejected."
+        : "Accept Swap failed, please try again.";
+
+      displayFailureMessage(errorMessage);
+
       return;
     } else {
-      toast.success("Success!", { autoClose: 3000, position: "top-center" });
+      setSwapStatus(SwapStatus.FINALIZED);
+
+      displaySuccessMessage("Swap accepted!");
     }
 
     await updateSwapState(swap.id, swapReceipt!.transactionHash);
@@ -155,9 +144,13 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const handleAcceptSwap = async () => {
     switch (swapStatus) {
       case SwapStatus.INIT:
-        return await handleApprove();
+        return await handleApproveForAcceptSwap();
       case SwapStatus.APPROVED:
         return await handleAccept();
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
+        return;
     }
 
     const _ensureAllCasesCovered: never = swapStatus;
@@ -167,8 +160,42 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     switch (swapStatus) {
       case SwapStatus.INIT:
         return "Approve";
+      case SwapStatus.APPROVAL_PENDING:
+        return "Approval Pending...";
       case SwapStatus.APPROVED:
         return "Accept Swap";
+      case SwapStatus.FINALIZATION_PENDING:
+        return "Accept Pending...";
+      case SwapStatus.FINALIZED:
+        return "Accepted";
+    }
+
+    const _ensureAllCasesCovered: never = swapStatus;
+  };
+
+  const getSwapButtonStyle = () => {
+    switch (swapStatus) {
+      case SwapStatus.INIT:
+      case SwapStatus.APPROVED:
+        return ACTIVE_BUTTON_STYLE;
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
+        return INACTIVE_BUTTON_STYLE;
+    }
+
+    const _ensureAllCasesCovered: never = swapStatus;
+  };
+
+  const getSwapButtonDisabled = () => {
+    switch (swapStatus) {
+      case SwapStatus.INIT:
+      case SwapStatus.APPROVED:
+        return false;
+      case SwapStatus.APPROVAL_PENDING:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
+        return true;
     }
 
     const _ensureAllCasesCovered: never = swapStatus;
@@ -181,54 +208,79 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         setVisible={setShareModalVisible}
         swapLink={`${FRONTEND_URL}/swap-overview/${swapId}`}
       />
-      {!active ? (
-        <button
-          className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleShareClick}
-        >
-          Share
-        </button>
-      ) : !wallet ? (
-        <div className="flex flex-col items-center gap-4 lg:gap-5">
+      {(() => {
+        if (!active) {
+          return (
+            <button
+              className="btn-secondary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg py-2"
+              onClick={handleShareClick}
+            >
+              Share
+            </button>
+          );
+        }
+
+        if (!wallet) {
+          return (
+            <div className="flex flex-col items-center gap-4 lg:gap-5">
+              <button
+                className="btn-secondary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg py-2"
+                onClick={handleShareClick}
+              >
+                Share
+              </button>
+              <button
+                className="btn-quaternary w-[21.5rem] md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg py-2"
+                onClick={() => connect()}
+              >
+                Connect Wallet
+              </button>
+            </div>
+          );
+        }
+
+        if (connectedAddress === seller.toLowerCase()) {
+          return (
+            <button
+              className="btn-secondary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg py-2"
+              onClick={handleShareClick}
+            >
+              Share
+            </button>
+          );
+        }
+
+        if (
+          buyer !== ethers.constants.AddressZero &&
+          connectedAddress !== buyer.toLowerCase()
+        ) {
+          return (
+            <button className="btn-inactive cursor-default w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg py-2">
+              Not Allowed to Accept
+            </button>
+          );
+        }
+
+        if (connectedChain && connectedChain.id !== chains[0].id) {
+          return (
+            <SwitchChain
+              text="Switch Chain"
+              chainId={chains[0].id}
+              chainNamespace={chains[0].namespace}
+            />
+          );
+        }
+
+        return (
           <button
-            className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-            onClick={handleShareClick}
+            className={`${getSwapButtonStyle()} w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center text-lg`}
+            onClick={handleAcceptSwap}
+            disabled={getSwapButtonDisabled()}
           >
-            Share
+            {handleSwapButtonText()}
           </button>
-          <button
-            className="btn-quaternary h-10 w-[21.5rem] md:mt-0 md:w-[44rem] lg:w-[51rem]"
-            onClick={() => connect()}
-          >
-            Connect Wallet
-          </button>
-        </div>
-      ) : connectedAddress === seller.toLowerCase() ? (
-        <button
-          className="btn-secondary btn-share h-10 w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleShareClick}
-        >
-          Share
-        </button>
-      ) : buyer !== ethers.constants.AddressZero &&
-        connectedAddress !== buyer.toLowerCase() ? (
-        <button className="btn-inactive cursor-default w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]">
-          Not Allowed to Accept
-        </button>
-      ) : waitingForTx ? (
-        <div className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem] flex justify-center">
-          <div className="w-8 h-8 text-gray-600 fill-gray-400">
-            <LoadingSpinnerIcon />
-          </div>
-        </div>
-      ) : (
-        <button
-          className="btn-primary w-[21.5rem] mt-5 md:mt-0 md:w-[44rem] lg:w-[51rem]"
-          onClick={handleAcceptSwap}
-        >
-          {handleSwapButtonText()}
-        </button>
-      )}
+        );
+      })()}
       <ToastContainer />
     </div>
   );
