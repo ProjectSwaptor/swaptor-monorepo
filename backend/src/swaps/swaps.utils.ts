@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { StatusCodes } from "http-status-codes";
 
 import {
   CHAIN_TO_RPC,

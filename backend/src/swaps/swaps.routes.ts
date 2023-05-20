@@ -11,7 +11,6 @@ import {
 import { validateSignature } from "./swaps.middlewares";
 import {
   createSwapSchema,
-  getFeeSchema,
   getSwapSchema,
   getSwapsSchema,
   updateSwapStateSchema,
@@ -28,9 +27,9 @@ router.post(
 
 router.get("/swaps", processRequest(getSwapsSchema), getSwaps);
 
-router.get("/swaps/:id", processRequest(getSwapSchema), getSwap);
+router.get("/swaps/fee", getFeeInUsd);
 
-router.get("/swaps/:chain/fee", processRequest(getFeeSchema), getFeeInUsd);
+router.get("/swaps/:id", processRequest(getSwapSchema), getSwap);
 
 router.patch(
   "/swaps/:id/update-state",
