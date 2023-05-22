@@ -5,7 +5,11 @@ import { nanoid } from "nanoid";
 
 import { TokenData } from "@/types";
 import { createSwap } from "@/api/swaptor-backend/swaps";
-import { encodeSwapArguments, getSwapSignature } from "@/utils/blockchain";
+import {
+  encodeSwapArguments,
+  getCurrentChainId,
+  getSwapSignature,
+} from "@/utils/blockchain";
 import {
   SwapType,
   SWAP_TYPE_TO_TOKENS,
@@ -122,9 +126,8 @@ const SwapButton = ({
 
     setSwapStatus(SwapStatus.SIGNATURE_PENDING);
 
-    const expirationTime = (await getExpirationTime(
-      wallet!.chains[0].id as SupportedChain
-    ))!.toString();
+    const chain = getCurrentChainId(wallet!);
+    const expirationTime = (await getExpirationTime(chain))!.toString();
     const chainId = parseInt(wallet!.chains[0].id, 16).toString();
     const provider = wallet!.provider;
 

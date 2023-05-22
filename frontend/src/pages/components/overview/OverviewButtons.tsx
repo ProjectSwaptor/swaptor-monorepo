@@ -15,7 +15,7 @@ import {
   SWAP_TYPE_TO_TOKENS,
   TokenType,
 } from "@/constants";
-import { getFeeInWei, getSigner } from "@/utils/blockchain";
+import { getCurrentChainId, getFeeInWei, getSigner } from "@/utils/blockchain";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { approve } from "@/api/token-contract";
@@ -83,7 +83,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
 
   useEffect(() => {
     if (wallet) {
-      const chain = wallet.chains[0].id as SupportedChain;
+      const chain = getCurrentChainId(wallet);
       const signer = getSigner(wallet);
 
       const resolveFreemiumPeriod = async () => {
