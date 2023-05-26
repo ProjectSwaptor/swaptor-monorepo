@@ -1,17 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 import { solidityKeccak256 } from "ethers/lib/utils";
 
-import * as cacheService from "../cache/cache.service";
-import { Swap, SwapModel } from "./swaps.models";
+import { Swap, SwapModel, SwaptorConfigModel } from "./swaps.models";
 import { CreateSwapDto } from "./dtos/swaps.dtos";
 import { SwapQuery } from "./swaps.schema";
 import { getSwaptorEventParams, transformChainToHex } from "./swaps.utils";
 import { HttpError } from "../errors/errors.classes";
 import { MAX_RESOURCE_LIMIT } from "../environment";
 import { SwaptorChains } from "../common/common.types";
-import { CacheKey } from "../cache/cache.constants";
-import { getLatestFee } from "../oracles/oracles.contracts";
-import { SwaptorEvent } from "./swaps.constants";
+import { SwaptorEvent, SwaptorProperty } from "./swaps.constants";
 
 export const createSwap = async (createSwapDto: CreateSwapDto) => {
   const { id } = await SwapModel.create(createSwapDto);
@@ -64,12 +61,14 @@ export const updateSwapState = async (swap: Swap, transactionHash: string) => {
   return await SwapModel.updateOne({ id }, { active: false });
 };
 
-export const getFeeInUsd = async (chain: SwaptorChains) => {
-  const getLatestValue = () => getLatestFee(chain);
-  const fee = await cacheService.retrieveFromCache(
-    CacheKey.Fee,
-    getLatestValue
-  );
+export const getFeeInUsd = async () => {
+  const fee = await SwaptorConfigModel.findOne({
+    property: SwaptorProperty.Fee,
+  });
+
+  if (!fee) {
+    throw new HttpError("Fee not found", StatusCodes.NOT_FOUND);
+  }
 
   return fee;
 };

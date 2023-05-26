@@ -1,6 +1,6 @@
 import { getModelForClass, index, prop } from "@typegoose/typegoose";
 
-import { SwapType } from "./swaps.constants";
+import { SwapType, SwaptorProperty } from "./swaps.constants";
 
 @index({ seller: 1 })
 @index({ buyer: 1 })
@@ -51,4 +51,14 @@ export class Swap {
   public createdAt!: Date;
 }
 
+export class SwaptorConfig {
+  @prop({ type: String, required: true, unique: true })
+  public property!: SwaptorProperty;
+
+  @prop({ type: String, required: true })
+  public value!: string;
+}
+
 export const SwapModel = getModelForClass(Swap);
+
+export const SwaptorConfigModel = getModelForClass(SwaptorConfig);

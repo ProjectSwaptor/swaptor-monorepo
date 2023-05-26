@@ -103,16 +103,6 @@ const getSwapQuery = z.object({
     }),
 });
 
-const getFeeParams = z.object({
-  chain: z
-    .nativeEnum(Chain)
-    .refine(
-      (chain) => Object.keys(SWAPTOR_ADDRESSES).includes(chain.toLowerCase()),
-      "swaptor isn't deployed to selected chain"
-    )
-    .transform((chain) => chain.toLowerCase() as SwaptorChains),
-});
-
 const updateSwapStateBody = z.object({
   transactionHash: z
     .string()
@@ -127,10 +117,6 @@ export const createSwapSchema = {
 
 export const getSwapSchema = {
   params: getSwapParams,
-};
-
-export const getFeeSchema = {
-  params: getFeeParams,
 };
 
 export const updateSwapStateSchema = {
@@ -149,5 +135,3 @@ export type GetSwapRequest = TypedRequest<typeof getSwapSchema>;
 export type GetSwapsRequest = TypedRequest<typeof getSwapsSchema>;
 
 export type UpdateSwapStateRequest = TypedRequest<typeof updateSwapStateSchema>;
-
-export type GetFeeRequest = TypedRequest<typeof getFeeSchema>;
