@@ -25,7 +25,7 @@ import {
   getFeeInUsd,
   updateSwapState,
 } from "@/api/swaptor-backend/swaps";
-import { getFee, getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
+import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 
@@ -61,14 +61,13 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
           err: errorNativeCurrencyPriceInUsd,
           res: responseNativeCurrencyPriceInUsd,
         } = await getNativeCurrencyPrice(chain);
-        const { err: errorFeeInUsd, res: responseFeeInUsd } = await getFee(
-          chain
-        );
+        const { err: errorFeeInUsd, res: responseFeeInUsd } =
+          await getFeeInUsd();
 
         if (!errorNativeCurrencyPriceInUsd && !errorFeeInUsd) {
           setFeeInNativeCurrency(
             (
-              +responseFeeInUsd!.data.fee /
+              +responseFeeInUsd!.data.feeInUsd /
               +responseNativeCurrencyPriceInUsd!.data.price
             )
               .toFixed(2)
@@ -100,7 +99,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
 
         setIsFreemiumPeriod(+freeTrialEndTime > +currentBlockchainTimestamp);
         setConnectedAddress((await signer.getAddress()).toLowerCase());
-        setNativeCurrency(CHAIN_TO_SYMBOL[chain]);
+        setNativeCurrency(CHAIN_TO_SYMBOL[chain as SupportedChain]);
       };
 
       resolveFreemiumPeriod();
@@ -154,44 +153,28 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   };
 
   const handleAccept = async () => {
-    const signer = getSigner(wallet!);
-
-    setWaitingForTx(true);
-
-    const { err, res } = await getNativeCurrencyPrice(
-      connectedChain!.id as SupportedChain
-    );
-
-    if (err) {
-      return err;
-    }
-
-    const freeTrialEndTime = await getFreeTrialEndTime(signer);
-    const { err: blockchainTimeError, res: blockchainTimeResponse } =
-      await getBlockchainTime(connectedChain!.id as SupportedChain);
-
     const displayFailureMessage = (error: string) =>
       toast.error("Something went wrong: " + error, {
         autoClose: 3000,
         position: "top-center",
       });
 
+    const signer = getSigner(wallet!);
+    setWaitingForTx(true);
+
+    const freeTrialEndTime = await getFreeTrialEndTime(signer);
+
+    const { err: blockchainTimeError, res: blockchainTimeResponse } =
+      await getBlockchainTime(connectedChain!.id as SupportedChain);
     if (blockchainTimeError) {
       displayFailureMessage(blockchainTimeError.message);
       return;
     }
     const blockchainTime = blockchainTimeResponse!.data.chainTime;
 
-    const { err: feeInUsdError, res: feeInUsdResponse } = await getFeeInUsd();
-
-    if (feeInUsdError) {
-      displayFailureMessage(feeInUsdError.message);
-      return;
-    }
-
     const feeInWei =
       +freeTrialEndTime < +blockchainTime
-        ? getFeeInWei(res!.data.price, feeInUsdResponse!.data.feeInUsd)
+        ? BigNumber.from(feeInNativeCurrency)
         : BigNumber.from(0);
 
     const { res: swapReceipt, err: swapErr } = await acceptSwap(
