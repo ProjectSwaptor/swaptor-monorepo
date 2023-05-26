@@ -84,8 +84,8 @@ const main = async () => {
     return;
   }
 
-  await updateSwaptorFeeDb(parsedFee);
   await updateSwaptorFeeContract(parsedFee);
+  await updateSwaptorFeeDb(parsedFee);
 };
 
 main().then(() => process.exit(ExitCode.SUCCESS));
