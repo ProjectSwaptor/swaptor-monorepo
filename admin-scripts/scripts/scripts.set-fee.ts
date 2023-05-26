@@ -37,7 +37,9 @@ const updateSwaptorFeeDb = async (fee: string) => {
 const updateSwaptorFeeContract = async (fee: string) => {
   const feeSetters = Object.entries(SWAPTOR_ADDRESSES).map(
     ([chain, address]) => {
-      const provider = new ethers.JsonRpcProvider(CHAIN_TO_RPC[chain as Chain]);
+      const provider = new ethers.providers.JsonRpcProvider(
+        CHAIN_TO_RPC[chain as Chain]
+      );
       const signer = new ethers.Wallet(SWAPTOR_PRIVATE_KEY, provider);
       const swaptor = new ethers.Contract(address, SwaptorJSON.abi, signer);
 
@@ -69,7 +71,7 @@ const main = async () => {
     throw new Error("Cannot specify both db-only and contracts-only");
   }
 
-  const parsedFee = ethers.parseUnits(fee, FEE_DECIMALS).toString();
+  const parsedFee = ethers.utils.parseUnits(fee, FEE_DECIMALS).toString();
   await mongoose.connect(DB_CONNECTION_STRING);
 
   if (dbOnly) {
