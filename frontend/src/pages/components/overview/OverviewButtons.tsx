@@ -15,7 +15,7 @@ import {
   SWAP_TYPE_TO_TOKENS,
   TokenType,
 } from "@/constants";
-import { getCurrentChainId, getFeeInWei, getSigner } from "@/utils/blockchain";
+import { getCurrentChainId, getSigner } from "@/utils/blockchain";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { approve } from "@/api/token-contract";
@@ -28,6 +28,7 @@ import {
 import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
+import { CHAINLINK_FEE_DECIMAL } from "@/constants/blockchain/contracts";
 
 enum SwapStatus {
   INIT,
@@ -153,29 +154,12 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   };
 
   const handleAccept = async () => {
-    const displayFailureMessage = (error: string) =>
-      toast.error("Something went wrong: " + error, {
-        autoClose: 3000,
-        position: "top-center",
-      });
-
     const signer = getSigner(wallet!);
     setWaitingForTx(true);
 
-    const freeTrialEndTime = await getFreeTrialEndTime(signer);
-
-    const { err: blockchainTimeError, res: blockchainTimeResponse } =
-      await getBlockchainTime(connectedChain!.id as SupportedChain);
-    if (blockchainTimeError) {
-      displayFailureMessage(blockchainTimeError.message);
-      return;
-    }
-    const blockchainTime = blockchainTimeResponse!.data.chainTime;
-
-    const feeInWei =
-      +freeTrialEndTime < +blockchainTime
-        ? BigNumber.from(feeInNativeCurrency)
-        : BigNumber.from(0);
+    const feeInWei = !isFreemiumPeriod
+      ? ethers.utils.parseEther(feeInNativeCurrency)
+      : BigNumber.from(0);
 
     const { res: swapReceipt, err: swapErr } = await acceptSwap(
       signer,

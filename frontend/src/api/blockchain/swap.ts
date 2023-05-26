@@ -1,7 +1,7 @@
 import { SWAPTOR_CONTRACT } from "@/constants/blockchain/contracts";
 import { GetSwapDto, SwapType } from "@/constants/blockchain/types";
 import { encodeSwapArguments } from "@/utils/blockchain";
-import { BigNumber, ContractReceipt, Signer } from "ethers";
+import { BigNumberish, ContractReceipt, Signer } from "ethers";
 import { executeAsync } from "../wrappers";
 
 const swapTypeToSwapFunction = (signer: Signer, swapType: SwapType) => {
@@ -30,7 +30,7 @@ export const getFreeTrialEndTime = async (signer: Signer) => {
 export const acceptSwap = async (
   signer: Signer,
   swap: GetSwapDto,
-  feeInWei: BigNumber
+  feeInWei: BigNumberish
 ) => {
   const {
     id,
