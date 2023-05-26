@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import { mongoose } from "@typegoose/typegoose";
+import { getModelForClass, mongoose } from "@typegoose/typegoose";
 
 import * as SwaptorJSON from "../../backend/src/abis/Swaptor.json";
 
-import { SwaptorConfigModel } from "../../backend/src/swaps/swaps.models";
+import { SwaptorConfig } from "../../backend/src/swaps/swaps.models";
 import { SwaptorProperty } from "../../backend/src/swaps/swaps.constants";
 import { FEE_DECIMALS } from "../constants/constants.swaptor";
 import { MessageLogger, tryCatchFail } from "../helpers/helpers.utils";
@@ -13,6 +13,7 @@ import {
   Chain,
   SWAPTOR_ADDRESSES,
 } from "../../backend/src/common/common.constants";
+import { ExitCode } from "../constants/constants.swaptor";
 
 const updateSwaptorFeeDb = async (fee: string) => {
   const logger = new MessageLogger({
@@ -21,10 +22,13 @@ const updateSwaptorFeeDb = async (fee: string) => {
     errorMessage: "Error updating Swaptor fee in DB",
   });
 
+  const model = getModelForClass(SwaptorConfig);
+
   const handler = async () =>
-    await SwaptorConfigModel.updateOne(
+    await model.updateOne(
       { property: SwaptorProperty.Fee },
-      { value: fee }
+      { property: SwaptorProperty.Fee, value: fee },
+      { upsert: true }
     );
 
   await tryCatchFail(handler, logger);
@@ -82,4 +86,4 @@ const main = async () => {
   await updateSwaptorFeeContract(parsedFee);
 };
 
-main();
+main().then(() => process.exit(ExitCode.SUCCESS));
