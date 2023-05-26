@@ -70,5 +70,5 @@ export const getFeeInUsd = async () => {
     throw new HttpError("Fee not found", StatusCodes.NOT_FOUND);
   }
 
-  return fee;
+  return { feeInUsd: fee.value };
 };

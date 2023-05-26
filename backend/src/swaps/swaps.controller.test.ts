@@ -74,7 +74,7 @@ describe("GET /swaps/fee", () => {
     const response = await request(app).get(`/swaps/fee`);
 
     expect(response.status).toBe(StatusCodes.OK);
-    expect(response.text).toBe(FEE_IN_USD);
+    expect(response.body).toBe(FEE_IN_USD);
   });
 });
 

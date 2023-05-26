@@ -43,5 +43,5 @@ export const updateSwapState = async (
 export const getFeeInUsd = async (req: Request, res: Response) => {
   const fee = await service.getFeeInUsd();
 
-  return res.send(fee);
+  return res.json(fee);
 };
