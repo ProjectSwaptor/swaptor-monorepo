@@ -20,11 +20,3 @@ export const getBlockchainTime = async (chain: SupportedChain) => {
       await axios.get<BlockchainTime>(`${BACKEND_URL}/chains/${chain}/time`)
   );
 };
-
-type Fee = { fee: string };
-
-export const getFee = async (chain: SupportedChain) => {
-  return await executeAsync(
-    async () => await axios.get<Fee>(`${BACKEND_URL}/swaps/${chain}/fee`)
-  );
-};
