@@ -5,7 +5,7 @@
 
 @responsive {
   .step-container {
-    @apply flex items-center justify-center gap-12 px-4 sm:p-0 sm:w-[30rem] lg:w-[45rem];
+    @apply flex px-4 sm:p-0 md:w-[40rem];
   }
   .rounded-container {
     @apply border-[1px] border-gray-500 border-opacity-[67%] rounded-3xl;
