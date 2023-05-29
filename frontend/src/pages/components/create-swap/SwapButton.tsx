@@ -23,9 +23,7 @@ import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBlockchainTime } from "@/api/swaptor-backend/oracles";
-import {
-  checkTokenApprovals,
-} from "@/api/blockchain/common";
+import { checkTokenApprovals } from "@/api/blockchain/common";
 
 enum SwapStatus {
   INIT,
@@ -89,7 +87,7 @@ const SwapButton = ({
   const router = useRouter();
 
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
-  const [connectedAddress, setConnectedAddress] = useState<string>();
+  const [connectedAddress, setConnectedAddress] = useState("");
   const [{ wallet }] = useConnectWallet();
 
   const { address: offeredTokenAddress, tokenData: offeredTokenData } =
@@ -109,15 +107,15 @@ const SwapButton = ({
 
   useEffect(() => {
     const checkAllowance = async () => {
-      if (wallet) {
+      if (connectedAddress) {
         const alreadyApproved = await checkTokenApprovals(
           offeredTokenType,
           offeredTokenAddress,
           parseTokenData(offeredTokenType, offeredTokenData),
-          connectedAddress!,
-          getSigner(wallet)
+          connectedAddress,
+          getSigner(wallet!)
         );
-        
+
         if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
           setSwapStatus(SwapStatus.INIT);
         }
@@ -130,7 +128,6 @@ const SwapButton = ({
 
     checkAllowance();
   }, [
-    wallet,
     connectedAddress,
     offeredTokenAddress,
     offeredTokenType,

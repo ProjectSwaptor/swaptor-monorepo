@@ -21,9 +21,7 @@ import {
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
-import {
-  checkTokenApprovals,
-} from "@/api/blockchain/common";
+import { checkTokenApprovals } from "@/api/blockchain/common";
 
 enum SwapStatus {
   INIT,
@@ -53,12 +51,6 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     query: { swapId },
   } = router;
 
-  useEffect(() => {
-    if (wallet) {
-      setConnectedAddress(wallet.accounts[0].address);
-    }
-  }, [wallet]);
-
   const { seller, buyer, swapType, wantedTokenAddress, wantedTokenData } =
     swap || {
       seller: ethers.constants.AddressZero,
@@ -73,14 +65,20 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     : { wantedTokenType: TokenType.ERC20 };
 
   useEffect(() => {
+    if (wallet) {
+      setConnectedAddress(wallet.accounts[0].address);
+    }
+  }, [wallet]);
+
+  useEffect(() => {
     const checkAllowance = async () => {
-      if (wallet) {
+      if (connectedAddress) {
         const alreadyApproved = await checkTokenApprovals(
           wantedTokenType,
           wantedTokenAddress,
           parseTokenData(wantedTokenType, wantedTokenData),
           connectedAddress,
-          getSigner(wallet)
+          getSigner(wallet!)
         );
 
         if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
@@ -92,15 +90,8 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         }
       }
     };
-
     checkAllowance();
-  }, [
-    wallet,
-    connectedAddress,
-    wantedTokenAddress,
-    wantedTokenData,
-    wantedTokenType,
-  ]);
+  }, [connectedAddress]);
 
   const displaySuccessMessage = () =>
     toast.success("Success!", { autoClose: 3000, position: "top-center" });
