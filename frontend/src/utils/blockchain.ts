@@ -6,12 +6,22 @@ import {
   ERC721_ABI,
 } from "@/constants/blockchain/abis";
 import { CreateSwapEncodeArgs } from "@/types";
-import { CreateSwapArgsTypes } from "@/constants";
+import { CreateSwapArgsTypes, SupportedChain } from "@/constants";
 import { WalletState } from "@web3-onboard/core";
 import { executeAsync } from "@/api/wrappers";
 
 export const getSigner = (wallet: WalletState) => {
   return new ethers.providers.Web3Provider(wallet.provider).getSigner();
+};
+
+export const getCurrentChainId = (wallet: WalletState) => {
+  const currentChain = wallet.chains[0].id as SupportedChain;
+
+  if (Object.values(SupportedChain).includes(currentChain)) {
+    return currentChain;
+  }
+
+  throw new Error("Unsupported blockchain connected!");
 };
 
 export const getERC20Contract = (address: string) => {
