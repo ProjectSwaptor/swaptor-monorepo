@@ -121,9 +121,6 @@ const SwapButton = ({
     offeredTokenData,
   ]);
 
-  const handleApprove = async () => {
-    setSwapStatus(SwapStatus.APPROVAL_PENDING);
-
   const handleApproveForCreateSwap = async () => {
     await handleApprove(
       setSwapStatus,
