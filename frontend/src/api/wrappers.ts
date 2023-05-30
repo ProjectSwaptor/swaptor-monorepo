@@ -19,7 +19,7 @@ export const executeAsync = async <T>(
     return { res, err: null };
   } catch (err) {
     if (isError(err)) {
-      console.error(Error(err.message ?? err));
+      console.error(JSON.stringify(err));
       return { res: null, err };
     }
 

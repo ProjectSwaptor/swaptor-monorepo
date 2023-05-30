@@ -7,40 +7,45 @@ import ShareSwapModal from "./ShareSwapModal";
 import { GetSwapDto } from "@/constants/blockchain/types";
 import { acceptSwap, getFreeTrialEndTime } from "@/api/blockchain/swap";
 import { FRONTEND_URL } from "@/environment";
-import { SupportedChain, SWAP_TYPE_TO_TOKENS, TokenType } from "@/constants";
-import { getFeeInWei, getSigner } from "@/utils/blockchain";
-import { ToastContainer, toast } from "react-toastify";
+import {
+  CHAIN_TO_SYMBOL,
+  REFRESH_FEE_TIME_IN_MS,
+  SupportedChain,
+  SwapStatus,
+  SWAP_TYPE_TO_TOKENS,
+  TokenType,
+} from "@/constants";
+import { getCurrentChainId, getSigner } from "@/utils/blockchain";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { approve } from "@/api/token-contract";
 import { parseTokenData } from "@/utils/token";
-import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import {
   getBlockchainTime,
+  getFeeInUsd,
   updateSwapState,
 } from "@/api/swaptor-backend/swaps";
+import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
-import { checkTokenApprovals } from "@/api/blockchain/common";
-
-enum SwapStatus {
-  INIT,
-  APPROVAL_PENDING,
-  APPROVED,
-  ACCEPT_PENDING,
-  ACCEPTED,
-}
+import { displayFailureMessage, displaySuccessMessage } from "@/utils/toasts";
+import { handleApprove, checkTokenApprovals } from "@/api/blockchain/common";
 
 const ACTIVE_BUTTON_STYLE =
   "bg-teal-400 hover:bg-teal-500 border border-teal-400 hover:border-teal-500 transition text-black font-semibold rounded-lg py-2";
 const INACTIVE_BUTTON_STYLE =
   "bg-gray-700 text-gray-400 border border-gray-700 transition font-semibold animate-pulse rounded-lg py-2";
 
+const SUCCESS_MESSAGE = "Approval successful! Accept Swap to continue...";
+
 const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const [connectedAddress, setConnectedAddress] = useState("");
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
   const [active, setActive] = useRecoilState(swapActive);
+  const [isFreemiumPeriod, setIsFreemiumPeriod] = useState<boolean>(false);
+  const [feeInNativeCurrency, setFeeInNativeCurrency] = useState<string>("0");
+  const [nativeCurrency, setNativeCurrency] = useState<string>("ETH");
 
   const [{ chains, connectedChain }] = useSetChain();
   const [{ wallet }, connect] = useConnectWallet();
@@ -50,6 +55,59 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const {
     query: { swapId },
   } = router;
+
+  useEffect(() => {
+    if (connectedChain) {
+      const interval = setInterval(async () => {
+        const chain = connectedChain!.id as SupportedChain;
+        const {
+          err: errorNativeCurrencyPriceInUsd,
+          res: responseNativeCurrencyPriceInUsd,
+        } = await getNativeCurrencyPrice(chain);
+        const { err: errorFeeInUsd, res: responseFeeInUsd } =
+          await getFeeInUsd();
+
+        if (!errorNativeCurrencyPriceInUsd && !errorFeeInUsd) {
+          setFeeInNativeCurrency(
+            (
+              +responseFeeInUsd!.data.feeInUsd /
+              +responseNativeCurrencyPriceInUsd!.data.price
+            )
+              .toFixed(2)
+              .toString()
+          );
+        }
+      }, REFRESH_FEE_TIME_IN_MS);
+
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (wallet) {
+      const chain = getCurrentChainId(wallet);
+      const signer = getSigner(wallet);
+
+      const resolveFreemiumPeriod = async () => {
+        const { err, res: responseBlockchainTimeResponse } =
+          await getBlockchainTime(chain);
+
+        if (err) {
+          return err;
+        }
+        const currentBlockchainTimestamp =
+          responseBlockchainTimeResponse!.data.chainTime;
+
+        const freeTrialEndTime = await getFreeTrialEndTime(signer);
+
+        setIsFreemiumPeriod(+freeTrialEndTime > +currentBlockchainTimestamp);
+        setConnectedAddress((await signer.getAddress()).toLowerCase());
+        setNativeCurrency(CHAIN_TO_SYMBOL[chain as SupportedChain]);
+      };
+
+      resolveFreemiumPeriod();
+    }
+  }, [wallet]);
 
   const { seller, buyer, swapType, wantedTokenAddress, wantedTokenData } =
     swap || {
@@ -93,74 +151,30 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     checkAllowance();
   }, [connectedAddress]);
 
-  const displaySuccessMessage = () =>
-    toast.success("Success!", { autoClose: 3000, position: "top-center" });
-  const displayFailureMessage = () =>
-    toast.error("Something went wrong.", {
-      autoClose: 3000,
-      position: "top-center",
-    });
-
   const handleShareClick = () => {
     setShareModalVisible(true);
   };
 
-  const handleApprove = async () => {
-    setSwapStatus(SwapStatus.APPROVAL_PENDING);
-
-    const { err } = await approve(
-      wallet!,
+  const handleApproveForAcceptSwap = async () => {
+    await handleApprove(
+      setSwapStatus,
       wantedTokenType,
       wantedTokenAddress,
-      parseTokenData(wantedTokenType, wantedTokenData)
+      connectedAddress!,
+      wallet!,
+      parseTokenData(wantedTokenType, wantedTokenData),
+      SUCCESS_MESSAGE
     );
-
-    if (!err) {
-      setSwapStatus(SwapStatus.APPROVED);
-
-      displaySuccessMessage();
-    } else {
-      setSwapStatus(SwapStatus.INIT);
-
-      displayFailureMessage();
-    }
   };
 
   const handleAccept = async () => {
+    setSwapStatus(SwapStatus.FINALIZATION_PENDING);
+
     const signer = getSigner(wallet!);
 
-    setSwapStatus(SwapStatus.ACCEPT_PENDING);
-
-    const { err, res } = await getNativeCurrencyPrice(
-      connectedChain!.id as SupportedChain
-    );
-
-    if (err) {
-      return err;
-    }
-
-    const freeTrialEndTime = await getFreeTrialEndTime(signer);
-    const { err: blockchainTimeError, res: blockchainTimeResponse } =
-      await getBlockchainTime(connectedChain!.id as SupportedChain);
-
-    const displayFailureMessage = (error: string) =>
-      toast.error("Something went wrong: " + error, {
-        autoClose: 3000,
-        position: "top-center",
-      });
-
-    if (blockchainTimeError) {
-      setSwapStatus(SwapStatus.APPROVED);
-      displayFailureMessage(blockchainTimeError.message);
-
-      return;
-    }
-    const blockchainTime = blockchainTimeResponse!.data.chainTime;
-
-    const feeInWei =
-      +freeTrialEndTime < +blockchainTime
-        ? getFeeInWei(res!.data.price)
-        : BigNumber.from(0);
+    const feeInWei = !isFreemiumPeriod
+      ? ethers.utils.parseEther(feeInNativeCurrency)
+      : BigNumber.from(0);
 
     const { res: swapReceipt, err: swapErr } = await acceptSwap(
       signer,
@@ -170,16 +184,17 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
 
     if (swapErr) {
       setSwapStatus(SwapStatus.APPROVED);
+      const errorMessage = swapErr.message.includes("user rejected transaction")
+        ? "Accept Swap rejected."
+        : "Accept Swap failed, please try again.";
 
-      toast.error("Something went wrong: " + swapErr, {
-        autoClose: 3000,
-        position: "top-center",
-      });
+      displayFailureMessage(errorMessage);
+
       return;
     } else {
-      setSwapStatus(SwapStatus.ACCEPTED);
+      setSwapStatus(SwapStatus.FINALIZED);
 
-      toast.success("Success!", { autoClose: 3000, position: "top-center" });
+      displaySuccessMessage("Swap accepted!");
     }
 
     await updateSwapState(swap.id, swapReceipt!.transactionHash);
@@ -190,12 +205,12 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
   const handleAcceptSwap = async () => {
     switch (swapStatus) {
       case SwapStatus.INIT:
-        return await handleApprove();
+        return await handleApproveForAcceptSwap();
       case SwapStatus.APPROVED:
         return await handleAccept();
       case SwapStatus.APPROVAL_PENDING:
-      case SwapStatus.ACCEPT_PENDING:
-      case SwapStatus.ACCEPTED:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
         return;
     }
 
@@ -209,10 +224,13 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       case SwapStatus.APPROVAL_PENDING:
         return "Approval Pending...";
       case SwapStatus.APPROVED:
-        return "Accept Swap";
-      case SwapStatus.ACCEPT_PENDING:
+        const feeNote = isFreemiumPeriod
+          ? ""
+          : ` (${feeInNativeCurrency} ${nativeCurrency} fee will be aplied)`;
+        return `Accept Swap${feeNote}`;
+      case SwapStatus.FINALIZATION_PENDING:
         return "Accept Pending...";
-      case SwapStatus.ACCEPTED:
+      case SwapStatus.FINALIZED:
         return "Accepted";
     }
 
@@ -225,8 +243,8 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       case SwapStatus.APPROVED:
         return ACTIVE_BUTTON_STYLE;
       case SwapStatus.APPROVAL_PENDING:
-      case SwapStatus.ACCEPT_PENDING:
-      case SwapStatus.ACCEPTED:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
         return INACTIVE_BUTTON_STYLE;
     }
 
@@ -239,8 +257,8 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       case SwapStatus.APPROVED:
         return false;
       case SwapStatus.APPROVAL_PENDING:
-      case SwapStatus.ACCEPT_PENDING:
-      case SwapStatus.ACCEPTED:
+      case SwapStatus.FINALIZATION_PENDING:
+      case SwapStatus.FINALIZED:
         return true;
     }
 

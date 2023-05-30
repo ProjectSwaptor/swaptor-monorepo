@@ -5,7 +5,6 @@ import request from "supertest";
 import app from "../app";
 import * as swapsService from "../swaps/swaps.service";
 import { getCreateSwapDtoStub, getSwapStub } from "./stubs/swaps.stubs";
-import { SWAPTOR_ADDRESSES } from "../common/common.constants";
 import { SWAP_ID_LENGTH } from "./swaps.constants";
 
 const FEE_IN_USD = "500000000";
@@ -66,26 +65,16 @@ describe("GET /swap", () => {
   });
 });
 
-describe("GET /swaps/:chain/fee", () => {
+describe("GET /swaps/fee", () => {
   test("Should successfully retrieve fee in USD from all networks where Swaptor is deployed", async () => {
-    for (const chain of Object.keys(SWAPTOR_ADDRESSES)) {
-      jest
-        .spyOn(swapsService, "getFeeInUsd")
-        .mockReturnValueOnce(FEE_IN_USD as never);
+    jest
+      .spyOn(swapsService, "getFeeInUsd")
+      .mockReturnValueOnce(FEE_IN_USD as never);
 
-      const response = await request(app).get(`/swaps/${chain}/fee`);
+    const response = await request(app).get(`/swaps/fee`);
 
-      expect(response.status).toBe(StatusCodes.OK);
-      expect(response.text).toBe(FEE_IN_USD);
-    }
-  });
-
-  test("Shouldn't retrieve fee in USD from unsupported network", async () => {
-    const invalidChain = "invalidChain";
-
-    const response = await request(app).get(`/swaps/${invalidChain}/fee`);
-
-    expect(response.status).toBe(StatusCodes.BAD_REQUEST);
+    expect(response.status).toBe(StatusCodes.OK);
+    expect(response.body).toBe(FEE_IN_USD);
   });
 });
 

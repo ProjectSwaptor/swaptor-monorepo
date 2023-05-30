@@ -1,10 +1,9 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { StatusCodes } from "http-status-codes";
 
 import * as service from "./swaps.service";
 import {
   CreateSwapRequest,
-  GetFeeRequest,
   GetSwapRequest,
   GetSwapsRequest,
   UpdateSwapStateRequest,
@@ -41,9 +40,8 @@ export const updateSwapState = async (
   return res.status(StatusCodes.OK).json({ id, active: false });
 };
 
-export const getFeeInUsd = async (req: GetFeeRequest, res: Response) => {
-  const { chain } = req.params;
-  const fee = await service.getFeeInUsd(chain);
+export const getFeeInUsd = async (req: Request, res: Response) => {
+  const fee = await service.getFeeInUsd();
 
-  return res.send(fee);
+  return res.json(fee);
 };

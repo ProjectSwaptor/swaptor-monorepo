@@ -30,6 +30,22 @@
 @tailwind utilities;
 
 :root {
+  --toastify-color-progress-light: linear-gradient(
+    to right top,
+    #99f6e4,
+    75%,
+    #d6ff90
+  ) !important;
+  --toastify-color-progress-success: linear-gradient(
+    to right top,
+    #99f6e4,
+    75%,
+    #d6ff90
+  ) !important;
+  --toastify-icon-color-success: #2dd4bf !important;
+  --toastiy-color-light: #334155 !important;
+  --toastify-color-info: #334155 !important;
+  --toastify-toast-background: #334155 !important;
   --onboard-primary-1: #2dd4bf;
   --onboard-primary-100: #ccfbf1;
   --onboard-primary-200: #99f6e4;
@@ -125,6 +141,11 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+.toast-success {
+  background-color: #334155;
+  color: #2dd4bf;
 }
 
 .hero-header {

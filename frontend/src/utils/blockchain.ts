@@ -7,12 +7,21 @@ import {
 } from "@/constants/blockchain/abis";
 import { CreateSwapEncodeArgs } from "@/types";
 import { CreateSwapArgsTypes, SupportedChain } from "@/constants";
-import { FEE_IN_USD } from "@/environment";
 import { WalletState } from "@web3-onboard/core";
 import { executeAsync } from "@/api/wrappers";
 
 export const getSigner = (wallet: WalletState) => {
   return new ethers.providers.Web3Provider(wallet.provider).getSigner();
+};
+
+export const getCurrentChainId = (wallet: WalletState) => {
+  const currentChain = wallet.chains[0].id as SupportedChain;
+
+  if (Object.values(SupportedChain).includes(currentChain)) {
+    return currentChain;
+  }
+
+  throw new Error("Unsupported blockchain connected!");
 };
 
 export const getERC20Contract = (address: string) => {
@@ -48,8 +57,8 @@ export const getSwapSignature = async (
   return await executeAsync(() => signer.signMessage(messageHash));
 };
 
-export const getFeeInWei = (price: BigNumberish) => {
-  const feeInFiatBn = BigNumber.from(FEE_IN_USD);
+export const getFeeInWei = (price: BigNumberish, feeInUsd: BigNumberish) => {
+  const feeInFiatBn = BigNumber.from(feeInUsd);
   const priceInFiatBn = BigNumber.from(price);
 
   return feeInFiatBn.mul(ethers.utils.parseEther("1")).div(priceInFiatBn);

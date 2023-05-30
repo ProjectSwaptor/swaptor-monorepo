@@ -11,3 +11,7 @@ export enum SwaptorEvent {
   SwapCancelled = "SwapCancelled",
 }
 export const SWAP_ID_LENGTH = 36;
+
+export enum SwaptorProperty {
+  Fee = "fee",
+}

@@ -4,8 +4,17 @@ import ERC721Artifact from "../abis/ERC721.json";
 import { CreateSwapEncodeArgs, SwapTokens } from "@/types";
 
 export const ONE_DAY_IN_SECONDS = 86400;
+export const REFRESH_FEE_TIME_IN_MS = 5000;
 
 export const SWAP_ID_LENGTH = 36;
+
+export enum SwapStatus {
+  INIT,
+  APPROVAL_PENDING,
+  APPROVED,
+  FINALIZATION_PENDING,
+  FINALIZED,
+}
 
 export enum TokenType {
   ERC721 = "ERC721",
@@ -25,6 +34,10 @@ export enum SupportedChain {
 
 export const CHAIN_TO_RPC: Record<SupportedChain, string> = {
   [SupportedChain.Mumbai]: "https://rpc.ankr.com/polygon_mumbai",
+};
+
+export const CHAIN_TO_SYMBOL: Record<SupportedChain, string> = {
+  [SupportedChain.Mumbai]: "MATIC",
 };
 
 export const TOKEN_TYPE_TO_ABI: Record<TokenType, any> = {

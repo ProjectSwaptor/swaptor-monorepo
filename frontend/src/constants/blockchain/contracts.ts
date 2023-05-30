@@ -7,3 +7,5 @@ export const SWAPTOR_CONTRACT = new ethers.Contract(
   SWAPTOR_ADDRESS!,
   SWAPTOR_ABI
 );
+
+export const CHAINLINK_FEE_DECIMAL = 8;
