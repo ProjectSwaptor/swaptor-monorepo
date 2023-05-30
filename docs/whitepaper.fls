@@ -1,8 +1,8 @@
-PWD /Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs
+PWD /Users/donravle/Desktop/BerryBlock/Swaptor/swaptor-monorepo/docs
 INPUT /usr/local/texlive/2023/texmf.cnf
 INPUT /usr/local/texlive/2023/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/markoivankovic/Documents/Projects/swaptor-monorepo/docs/whitepaper.tex
+INPUT /Users/donravle/Desktop/BerryBlock/Swaptor/swaptor-monorepo/docs/whitepaper.tex
 OUTPUT whitepaper.log
 INPUT /usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2023/texmf-dist/tex/latex/base/article.cls
