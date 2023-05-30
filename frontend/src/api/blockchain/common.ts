@@ -7,7 +7,11 @@ import {
   TokenType,
 } from "@/constants";
 import { executeAsync } from "../wrappers";
-import { getERC20Contract, getSigner } from "@/utils/blockchain";
+import {
+  getERC20Contract,
+  getERC721Contract,
+  getSigner,
+} from "@/utils/blockchain";
 import { SWAPTOR_ADDRESS } from "@/environment";
 import { WalletState } from "@web3-onboard/core";
 import { approve } from "../token-contract";
@@ -48,6 +52,56 @@ export const checkERC20Allowance = async (
 
     return;
   }
+};
+
+export const checkERC721Approval = async (
+  tokenAddress: string,
+  tokenId: string,
+  connectedAddress: string,
+  signer: Signer
+): Promise<boolean | undefined> => {
+  try {
+    const token = getERC721Contract(tokenAddress).connect(signer);
+    const ownerOf = await token.ownerOf(tokenId);
+    const approved = await token.getApproved(tokenId);
+
+    return (
+      ownerOf.toLowerCase() === connectedAddress.toLowerCase() &&
+      approved.toLowerCase() === SWAPTOR_ADDRESS!.toLowerCase()
+    );
+  } catch (e) {
+    console.log(e);
+
+    return;
+  }
+};
+
+export const checkTokenApprovals = async (
+  tokenType: TokenType,
+  tokenAddress: string,
+  tokenData: string,
+  connectedAddress: string,
+  signer: Signer
+) => {
+  let alreadyApproved: boolean | undefined;
+
+  if (tokenType === TokenType.ERC20) {
+    alreadyApproved = await checkERC20Allowance(
+      tokenAddress,
+      tokenData,
+      connectedAddress,
+      signer
+    );
+  } else {
+    alreadyApproved = await checkERC721Approval(
+      tokenAddress,
+      tokenData,
+      connectedAddress,
+      signer
+    );
+  }
+
+  return alreadyApproved;
 };
 
 export const handleApprove = async (
@@ -96,5 +150,31 @@ export const handleApprove = async (
 
     setSwapStatus(SwapStatus.APPROVED);
     displaySuccessMessage(successMsg);
+  }
+};
+
+export const checkTokenAllowance = async (
+  tokenType: TokenType,
+  tokenAddress: string,
+  tokenData: string,
+  connectedAddress: string,
+  signer: Signer,
+  swapStatus: SwapStatus,
+  setSwapStatus: (swapStatus: SwapStatus) => void
+) => {
+  const alreadyApproved = await checkTokenApprovals(
+    tokenType,
+    tokenAddress,
+    tokenData,
+    connectedAddress,
+    signer
+  );
+
+  if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
+    setSwapStatus(SwapStatus.INIT);
+  }
+
+  if (alreadyApproved) {
+    setSwapStatus(SwapStatus.APPROVED);
   }
 };

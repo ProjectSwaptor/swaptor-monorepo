@@ -8,6 +8,7 @@ import { createSwap } from "@/api/swaptor-backend/swaps";
 import {
   encodeSwapArguments,
   getCurrentChainId,
+  getSigner,
   getSwapSignature,
 } from "@/utils/blockchain";
 import {
@@ -24,7 +25,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBlockchainTime } from "@/api/swaptor-backend/oracles";
 import { displayFailureMessage } from "@/utils/toasts";
-import { handleApprove } from "@/api/blockchain/common";
+import {
+  handleApprove,
+  checkTokenApprovals,
+  checkTokenAllowance,
+} from "@/api/blockchain/common";
 
 export type SwapArgs = {
   swapType: SwapType;
@@ -73,7 +78,7 @@ const SwapButton = ({
   const router = useRouter();
 
   const [swapStatus, setSwapStatus] = useState(SwapStatus.INIT);
-  const [connectedAddress, setConnectedAddress] = useState<string>();
+  const [connectedAddress, setConnectedAddress] = useState("");
   const [{ wallet }] = useConnectWallet();
 
   const { address: offeredTokenAddress, tokenData: offeredTokenData } =
@@ -90,6 +95,29 @@ const SwapButton = ({
       setConnectedAddress(wallet.accounts[0].address);
     }
   }, [wallet]);
+
+  useEffect(() => {
+    const checkAllowance = async () => {
+      if (connectedAddress) {
+        await checkTokenAllowance(
+          offeredTokenType,
+          offeredTokenAddress,
+          parseTokenData(offeredTokenType, offeredTokenData),
+          connectedAddress,
+          getSigner(wallet!),
+          swapStatus,
+          setSwapStatus
+        );
+      }
+    };
+
+    checkAllowance();
+  }, [
+    connectedAddress,
+    offeredTokenAddress,
+    offeredTokenType,
+    offeredTokenData,
+  ]);
 
   const handleApproveForCreateSwap = async () => {
     await handleApprove(

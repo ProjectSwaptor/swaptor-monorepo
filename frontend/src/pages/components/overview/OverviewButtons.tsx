@@ -29,7 +29,11 @@ import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
 import { displayFailureMessage, displaySuccessMessage } from "@/utils/toasts";
-import { handleApprove } from "@/api/blockchain/common";
+import {
+  handleApprove,
+  checkTokenApprovals,
+  checkTokenAllowance,
+} from "@/api/blockchain/common";
 
 const ACTIVE_BUTTON_STYLE =
   "bg-teal-400 hover:bg-teal-500 border border-teal-400 hover:border-teal-500 transition text-black font-semibold rounded-lg py-2";
@@ -122,6 +126,29 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     ? SWAP_TYPE_TO_TOKENS[swapType]
     : { wantedTokenType: TokenType.ERC20 };
 
+  useEffect(() => {
+    if (wallet) {
+      setConnectedAddress(wallet.accounts[0].address);
+    }
+  }, [wallet]);
+
+  useEffect(() => {
+    const checkAllowance = async () => {
+      if (connectedAddress) {
+        await checkTokenAllowance(
+          wantedTokenType,
+          wantedTokenAddress,
+          parseTokenData(wantedTokenType, wantedTokenData),
+          connectedAddress,
+          getSigner(wallet!),
+          swapStatus,
+          setSwapStatus
+        );
+      }
+    };
+    checkAllowance();
+  }, [connectedAddress]);
+
   const handleShareClick = () => {
     setShareModalVisible(true);
   };
@@ -188,7 +215,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
     const _ensureAllCasesCovered: never = swapStatus;
   };
 
-  const handleSwapButtonText = () => {
+  const getSwapButtonText = () => {
     switch (swapStatus) {
       case SwapStatus.INIT:
         return "Approve";
@@ -312,7 +339,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
             onClick={handleAcceptSwap}
             disabled={getSwapButtonDisabled()}
           >
-            {handleSwapButtonText()}
+            {getSwapButtonText()}
           </button>
         );
       })()}
