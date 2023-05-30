@@ -7,7 +7,11 @@ import {
   TokenType,
 } from "@/constants";
 import { executeAsync } from "../wrappers";
-import { getERC20Contract, getERC721Contract, getSigner } from "@/utils/blockchain";
+import {
+  getERC20Contract,
+  getERC721Contract,
+  getSigner,
+} from "@/utils/blockchain";
 import { SWAPTOR_ADDRESS } from "@/environment";
 import { WalletState } from "@web3-onboard/core";
 import { approve } from "../token-contract";
@@ -146,5 +150,31 @@ export const handleApprove = async (
 
     setSwapStatus(SwapStatus.APPROVED);
     displaySuccessMessage(successMsg);
+  }
+};
+
+export const checkTokenAllowance = async (
+  tokenType: TokenType,
+  tokenAddress: string,
+  tokenData: string,
+  connectedAddress: string,
+  signer: Signer,
+  swapStatus: SwapStatus,
+  setSwapStatus: (swapStatus: SwapStatus) => void
+) => {
+  const alreadyApproved = await checkTokenApprovals(
+    tokenType,
+    tokenAddress,
+    tokenData,
+    connectedAddress,
+    signer
+  );
+
+  if (!alreadyApproved && swapStatus === SwapStatus.APPROVED) {
+    setSwapStatus(SwapStatus.INIT);
+  }
+
+  if (alreadyApproved) {
+    setSwapStatus(SwapStatus.APPROVED);
   }
 };
