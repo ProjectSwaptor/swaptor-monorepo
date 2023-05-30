@@ -16,7 +16,7 @@ export const displaySuccessMessage = (successMsg: string) =>
 
 export const displayFailureMessage = (errorMsg: string) =>
   toast.error(`Something went wrong. ${errorMsg}`, {
-    autoClose: 10000,
+    autoClose: 6000,
     position: "top-center",
     style: {
       background: "#334155",
@@ -30,7 +30,7 @@ export const displayFailureMessage = (errorMsg: string) =>
 
 export const displayWarningMessage = (warningMsg: string) =>
   toast.warn(warningMsg, {
-    autoClose: 10000,
+    autoClose: 6000,
     position: "top-center",
     style: {
       background: "#334155",
