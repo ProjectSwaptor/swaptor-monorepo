@@ -15,7 +15,7 @@ import {
   SWAP_TYPE_TO_TOKENS,
   TokenType,
 } from "@/constants";
-import { getFeeInWei, getCurrentChainId, getSigner } from "@/utils/blockchain";
+import { getCurrentChainId, getSigner } from "@/utils/blockchain";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { parseTokenData } from "@/utils/token";
@@ -30,7 +30,6 @@ import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
 import { displayFailureMessage, displaySuccessMessage } from "@/utils/toasts";
 import { handleApprove } from "@/api/blockchain/common";
-import { CHAINLINK_FEE_DECIMAL } from "@/constants/blockchain/contracts";
 
 const ACTIVE_BUTTON_STYLE =
   "bg-teal-400 hover:bg-teal-500 border border-teal-400 hover:border-teal-500 transition text-black font-semibold rounded-lg py-2";
