@@ -21,12 +21,6 @@ const swapTypeToSwapFunction = (signer: Signer, swapType: SwapType) => {
   const _ensureAllCasesCovered: never = swapType;
 };
 
-export const getFreeTrialEndTime = async (signer: Signer) => {
-  const swaptorContract = SWAPTOR_CONTRACT.connect(signer);
-
-  return (await swaptorContract.freeTrialEndTime()).toString();
-};
-
 export const acceptSwap = async (
   signer: Signer,
   swap: GetSwapDto,

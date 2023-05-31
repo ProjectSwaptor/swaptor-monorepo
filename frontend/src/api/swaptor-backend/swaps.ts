@@ -55,3 +55,14 @@ export const getFeeInUsd = async () => {
     async () => await axios.get<FeeInUsd>(`${BACKEND_URL}/swaps/fee`)
   );
 };
+
+type FreeTrialEndTime = { freeTrialEndTime: string };
+
+export const getFreeTrialEndTime = async () => {
+  return await executeAsync(
+    async () =>
+      await axios.get<FreeTrialEndTime>(
+        `${BACKEND_URL}/swaps/free-trial-end-time`
+      )
+  );
+};

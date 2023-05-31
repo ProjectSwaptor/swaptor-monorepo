@@ -45,3 +45,9 @@ export const getFeeInUsd = async (req: Request, res: Response) => {
 
   return res.json(fee);
 };
+
+export const getFreeTrialEndTime = async (req: Request, res: Response) => {
+  const freeTrialEndTime = await service.getFreeTrialEndTime();
+
+  return res.json(freeTrialEndTime);
+};

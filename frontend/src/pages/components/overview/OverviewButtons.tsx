@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import ShareSwapModal from "./ShareSwapModal";
 import { GetSwapDto } from "@/constants/blockchain/types";
-import { acceptSwap, getFreeTrialEndTime } from "@/api/blockchain/swap";
+import { acceptSwap } from "@/api/blockchain/swap";
 import { FRONTEND_URL } from "@/environment";
 import {
   CHAIN_TO_SYMBOL,
@@ -23,6 +23,7 @@ import {
   getBlockchainTime,
   getFeeInUsd,
   updateSwapState,
+  getFreeTrialEndTime,
 } from "@/api/swaptor-backend/swaps";
 import { getNativeCurrencyPrice } from "@/api/swaptor-backend/oracles";
 import { useRecoilState } from "recoil";
@@ -102,7 +103,7 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
         const currentBlockchainTimestamp =
           responseBlockchainTimeResponse!.data.chainTime;
 
-        const freeTrialEndTime = await getFreeTrialEndTime(signer);
+        const freeTrialEndTime = await getFreeTrialEndTime();
 
         setIsFreemiumPeriod(+freeTrialEndTime > +currentBlockchainTimestamp);
         setConnectedAddress((await signer.getAddress()).toLowerCase());
