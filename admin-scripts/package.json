@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "set-fee": "ts-node ./scripts/scripts.set-fee"
+    "set-fee": "ts-node ./scripts/scripts.set-fee",
+    "set-free-trial-end-time": "ts-node ./scripts/scripts.set-free-trial-end-time"
   },
   "keywords": [],
   "author": "",
