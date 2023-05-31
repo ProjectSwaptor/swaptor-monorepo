@@ -30,11 +30,7 @@ import { useRecoilState } from "recoil";
 import { swapActive } from "@/state/atoms";
 import SwitchChain from "../SwitchChain";
 import { displayFailureMessage, displaySuccessMessage } from "@/utils/toasts";
-import {
-  handleApprove,
-  checkTokenApprovals,
-  checkTokenAllowance,
-} from "@/api/blockchain/common";
+import { handleApprove, checkTokenAllowance } from "@/api/blockchain/common";
 
 const ACTIVE_BUTTON_STYLE =
   "bg-teal-400 hover:bg-teal-500 border border-teal-400 hover:border-teal-500 transition text-black font-semibold rounded-lg py-2";
@@ -94,18 +90,27 @@ const OverviewButtons = ({ swap }: { swap: GetSwapDto }) => {
       const signer = getSigner(wallet);
 
       const resolveFreemiumPeriod = async () => {
-        const { err, res: responseBlockchainTimeResponse } =
-          await getBlockchainTime(chain);
+        const {
+          err: errorBlockchainTimeResponse,
+          res: responseBlockchainTimeResponse,
+        } = await getBlockchainTime(chain);
 
-        if (err) {
-          return err;
+        if (errorBlockchainTimeResponse) {
+          return errorBlockchainTimeResponse;
         }
         const currentBlockchainTimestamp =
           responseBlockchainTimeResponse!.data.chainTime;
 
-        const freeTrialEndTime = await getFreeTrialEndTime();
+        const { err: errorFreeTrialEndTime, res: responseFreeTrialEndTime } =
+          await getFreeTrialEndTime();
+        if (errorFreeTrialEndTime) {
+          return errorFreeTrialEndTime;
+        }
 
-        setIsFreemiumPeriod(+freeTrialEndTime > +currentBlockchainTimestamp);
+        setIsFreemiumPeriod(
+          +responseFreeTrialEndTime!.data.freeTrialEndTime >
+            +currentBlockchainTimestamp
+        );
         setConnectedAddress((await signer.getAddress()).toLowerCase());
         setNativeCurrency(CHAIN_TO_SYMBOL[chain as SupportedChain]);
       };
