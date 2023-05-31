@@ -32,6 +32,11 @@ const Navbar = () => {
             </Link>
           </button>
           <button>
+            <Link href="https://github.com/ProjectSwaptor/swaptor-monorepo/blob/dev/docs/whitepaper.pdf" target="_blank">
+              Whitepaper
+            </Link>
+          </button>
+          <button>
             <Link href="https://discord.com/invite/AufTrXDwzS" target="_blank">
               Discord
             </Link>
@@ -92,6 +97,14 @@ const Navbar = () => {
                   <button className="flex w-full text-teal-400">
                     <Link href={url} target="_blank" rel="noopener noreferrer">
                       Get Test Tokens
+                    </Link>
+                  </button>
+                  <button className="flex w-full">
+                    <Link
+                      href="https://github.com/ProjectSwaptor/swaptor-monorepo/blob/dev/docs/whitepaper.pdf"
+                      target="_blank"
+                    >
+                      Whitepaper
                     </Link>
                   </button>
                   <button className="flex w-full">
