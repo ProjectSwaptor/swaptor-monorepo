@@ -1,4 +1,7 @@
 import Benefit from "../components/home-page/benefits/Benefit";
+import staySafeIcon from "../../../public/stay-safe.svg";
+import flatFeeIcon from "../../../public/flat-fee.svg";
+import beyondCoinsIcon from "../../../public/beyond-coins.svg";
 
 const Benefits = () => {
   const scamlessBenefitHeader = "Stay safe from scams.";
@@ -14,16 +17,19 @@ const Benefits = () => {
   return (
     <div className="w-full mt-14 flex align-center flex-col space-y-8 lg:flex-row lg:space-x-8 lg:space-y-0">
       <Benefit
+        icon={staySafeIcon}
         header={scamlessBenefitHeader}
         paragraph={scamlessBenefitParagraph}
       />
 
       <Benefit
+        icon={flatFeeIcon}
         header={noSlippageBenefitHeader}
         paragraph={noSlippageBenefitParagraph}
       />
 
       <Benefit
+        icon={beyondCoinsIcon}
         header={beyondCoinsBenefitHeader}
         paragraph={beyondCoinsBenefitParagraph}
       />
