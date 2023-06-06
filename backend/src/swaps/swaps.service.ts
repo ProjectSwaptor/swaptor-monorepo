@@ -72,3 +72,15 @@ export const getFeeInUsd = async () => {
 
   return { feeInUsd: fee.value };
 };
+
+export const getFreeTrialEndTime = async () => {
+  const freeTrialEndTime = await SwaptorConfigModel.findOne({
+    property: SwaptorProperty.FreeTrialEndTime,
+  });
+
+  if (!freeTrialEndTime) {
+    throw new HttpError("Free trial end time not found", StatusCodes.NOT_FOUND);
+  }
+
+  return { freeTrialEndTime: freeTrialEndTime.value };
+};

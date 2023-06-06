@@ -7,6 +7,7 @@ import {
   getSwaps,
   updateSwapState,
   getFeeInUsd,
+  getFreeTrialEndTime,
 } from "./swaps.controller";
 import { validateSignature } from "./swaps.middlewares";
 import {
@@ -28,6 +29,8 @@ router.post(
 router.get("/swaps", processRequest(getSwapsSchema), getSwaps);
 
 router.get("/swaps/fee", getFeeInUsd);
+
+router.get("/swaps/free-trial-end-time", getFreeTrialEndTime);
 
 router.get("/swaps/:id", processRequest(getSwapSchema), getSwap);
 
